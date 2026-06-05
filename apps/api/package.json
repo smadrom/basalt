@@ -23,7 +23,7 @@
     "@elysiajs/cors": "^1.2.0",
     "@elysiajs/openapi": "^1.2.0",
     "better-auth": "^1.6.14",
-    "drizzle-orm": "^0.38.0",
+    "drizzle-orm": "^0.45.2",
     "elysia": "^1.2.0",
     "postgres": "^3.4.5"
   },
