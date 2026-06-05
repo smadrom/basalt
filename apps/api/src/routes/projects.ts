@@ -3,11 +3,11 @@
  * (`auth: true`) and is scoped to the authenticated user's id. Use it as the
  * template for your own resources, then delete it.
  */
-import { Elysia, t } from 'elysia';
 import { and, desc, eq } from 'drizzle-orm';
+import { Elysia, t } from 'elysia';
+import { betterAuthPlugin } from '../auth/plugin.ts';
 import { db } from '../db/index.ts';
 import { projects } from '../db/schema.ts';
-import { betterAuthPlugin } from '../auth/plugin.ts';
 
 const ProjectModel = t.Object({
   id: t.String(),

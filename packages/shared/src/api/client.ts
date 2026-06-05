@@ -1,5 +1,5 @@
-import { treaty, type Treaty } from '@elysiajs/eden';
 import type { App } from '@basalt/api';
+import { type Treaty, treaty } from '@elysiajs/eden';
 
 /**
  * Typed API client (Eden Treaty) — zero codegen.

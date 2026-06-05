@@ -1,4 +1,4 @@
-import { createApiClient, useAuthStore, type AuthUser } from '@basalt/shared';
+import { type AuthUser, createApiClient, useAuthStore } from '@basalt/shared';
 
 const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 

@@ -6,9 +6,9 @@
  * - Built-in OpenAPI + Swagger UI at /openapi
  * - Exports the `App` type for Eden Treaty — typed client on the web, no codegen.
  */
-import { Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
 import { openapi } from '@elysiajs/openapi';
+import { Elysia } from 'elysia';
 import { betterAuthPlugin } from './auth/plugin.ts';
 import { projectsRoutes } from './routes/projects.ts';
 
@@ -40,6 +40,5 @@ const port = Number(process.env.PORT ?? 3001);
 
 if (import.meta.main) {
   app.listen(port);
-  // eslint-disable-next-line no-console
   console.log(`🪨  @basalt/api on http://localhost:${port}  (OpenAPI: /openapi)`);
 }

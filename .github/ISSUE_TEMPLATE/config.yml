@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & discussions
+    url: https://github.com/smadrom/basalt/discussions
+    about: Ask questions and discuss ideas here instead of opening an issue.

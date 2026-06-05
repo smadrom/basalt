@@ -1,6 +1,6 @@
 import { useAuthStore } from '@basalt/shared';
-import { LoginScreen } from './screens/LoginScreen.tsx';
 import { HomeScreen } from './screens/HomeScreen.tsx';
+import { LoginScreen } from './screens/LoginScreen.tsx';
 
 export function App() {
   const token = useAuthStore((s) => s.token);

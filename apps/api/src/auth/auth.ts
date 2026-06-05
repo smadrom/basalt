@@ -8,13 +8,10 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { bearer } from 'better-auth/plugins';
-import { db } from '../db/index.ts';
 import * as authSchema from '../db/auth-schema.ts';
+import { db } from '../db/index.ts';
 
-const localTrustedOrigins = [
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
-];
+const localTrustedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
 
 const configuredTrustedOrigins = process.env.BETTER_AUTH_TRUSTED_ORIGINS
   ? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(',')
