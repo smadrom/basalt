@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: hsl(0 0% 100%);
+  --fg: hsl(222 47% 11%);
+  --muted: hsl(215 16% 47%);
+  --primary: hsl(243 75% 59%);
+  --primary-fg: hsl(0 0% 100%);
+  --border: hsl(214 32% 91%);
+  --danger: hsl(0 72% 51%);
+}
+
+.dark {
+  --bg: hsl(222 47% 11%);
+  --fg: hsl(210 40% 98%);
+  --muted: hsl(215 20% 65%);
+  --primary: hsl(243 75% 59%);
+  --primary-fg: hsl(0 0% 100%);
+  --border: hsl(217 33% 23%);
+  --danger: hsl(0 72% 51%);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+}

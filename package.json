@@ -1,0 +1,28 @@
+{
+  "name": "basalt",
+  "private": true,
+  "packageManager": "bun@1.3.14",
+  "description": "Basalt — a solid Bun + Elysia + React (TS) monorepo base for web/SaaS projects.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "dev:api": "turbo run dev --filter=@basalt/api",
+    "dev:web": "turbo run dev --filter=@basalt/web",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "check": "turbo run typecheck test",
+    "verify": "turbo run typecheck test build",
+    "db:up": "docker compose -f docker/docker-compose.yml up -d",
+    "db:down": "docker compose -f docker/docker-compose.yml down",
+    "db:generate": "turbo run db:generate --filter=@basalt/api",
+    "db:migrate": "turbo run db:migrate --filter=@basalt/api"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "app": {
+    "name": "Basalt",
+    "tagline": "A solid base to build on"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "signOut": "Sign out",
+    "email": "Email",
+    "password": "Password",
+    "needAccount": "Need an account? Sign up",
+    "haveAccount": "Have an account? Sign in",
+    "error": "Authentication failed"
+  },
+  "home": {
+    "greeting": "Welcome, {{name}}",
+    "projects": "Projects",
+    "newProject": "New project",
+    "namePlaceholder": "Project name",
+    "create": "Create",
+    "empty": "No projects yet. Create your first one.",
+    "delete": "Delete"
+  }
+}
