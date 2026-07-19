@@ -22,7 +22,7 @@
     "@basalt/api": "*",
     "@types/react": "^18.2.66",
     "elysia": "^1.2.0",
-    "typescript": "^5.6.0",
+    "typescript": "^7.0.2",
     "vitest": "^4.1.10"
   },
   "peerDependencies": {
