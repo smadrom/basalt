@@ -15,7 +15,7 @@ jobs:
     name: Lint · Typecheck · Test · Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -65,7 +65,7 @@ jobs:
       BETTER_AUTH_SECRET: ci-integration-secret-at-least-32-characters
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
