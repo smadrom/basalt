@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@elysiajs/eden": "^1.2.0",
-    "i18next": "^26.0.1",
-    "react-i18next": "^17.0.1",
+    "i18next": "^26.3.6",
+    "react-i18next": "^17.0.10",
     "zod": "^3.23.0",
     "zustand": "^4.5.2"
   },
