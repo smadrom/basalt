@@ -3,6 +3,10 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build", "typecheck"],
+      "outputs": []
+    },
+    "@basalt/web#build": {
+      "dependsOn": ["^build", "typecheck"],
       "outputs": ["dist/**"]
     },
     "dev": {

@@ -14,4 +14,9 @@ const connectionString =
 const client = postgres(connectionString, { prepare: false });
 
 export const db = drizzle(client, { schema });
+
+export const closeDatabase = async () => {
+  await client.end({ timeout: 1 });
+};
+
 export { schema };

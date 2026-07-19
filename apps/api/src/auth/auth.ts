@@ -8,30 +8,38 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { bearer } from 'better-auth/plugins';
+import { trustedOrigins } from '../config/origins.ts';
 import * as authSchema from '../db/auth-schema.ts';
 import { db } from '../db/index.ts';
 
-const localTrustedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173'];
+const developmentSecret = 'dev-only-change-before-deploying';
+const secret = process.env.BETTER_AUTH_SECRET?.trim() || developmentSecret;
 
-const configuredTrustedOrigins = process.env.BETTER_AUTH_TRUSTED_ORIGINS
-  ? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(',')
-      .map((origin) => origin.trim())
-      .filter(Boolean)
-  : [];
+if (process.env.NODE_ENV === 'production' && secret === developmentSecret) {
+  throw new Error('BETTER_AUTH_SECRET must be set to a unique value in production');
+}
+
+const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim();
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
+
+if (Boolean(googleClientId) !== Boolean(googleClientSecret)) {
+  throw new Error('GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be configured together');
+}
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3001',
-  trustedOrigins: [...localTrustedOrigins, ...configuredTrustedOrigins],
-  secret: process.env.BETTER_AUTH_SECRET ?? 'dev-secret-change-me',
+  trustedOrigins,
+  secret,
   database: drizzleAdapter(db, { provider: 'pg', schema: authSchema }),
   emailAndPassword: { enabled: true },
-  socialProviders: process.env.GOOGLE_CLIENT_ID
-    ? {
-        google: {
-          clientId: process.env.GOOGLE_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-        },
-      }
-    : undefined,
+  socialProviders:
+    googleClientId && googleClientSecret
+      ? {
+          google: {
+            clientId: googleClientId,
+            clientSecret: googleClientSecret,
+          },
+        }
+      : undefined,
   plugins: [bearer()],
 });

@@ -12,6 +12,24 @@ describe('@basalt/api', () => {
     expect(await res.json()).toEqual({ status: 'ok' });
   });
 
+  it('allows a configured browser origin', async () => {
+    const res = await app.handle(
+      new Request('http://localhost/health', {
+        headers: { Origin: 'http://localhost:5173' },
+      }),
+    );
+    expect(res.headers.get('access-control-allow-origin')).toBe('http://localhost:5173');
+  });
+
+  it('does not allow an unknown browser origin', async () => {
+    const res = await app.handle(
+      new Request('http://localhost/health', {
+        headers: { Origin: 'https://example.invalid' },
+      }),
+    );
+    expect(res.headers.has('access-control-allow-origin')).toBe(false);
+  });
+
   it('GET /api/me without a token is unauthorized', async () => {
     const res = await app.handle(new Request('http://localhost/api/me'));
     expect(res.status).toBe(401);

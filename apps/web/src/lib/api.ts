@@ -33,6 +33,18 @@ export async function signUp(email: string, password: string, name: string) {
   useAuthStore.getState().setSession(token, user);
 }
 
-export function signOut() {
-  useAuthStore.getState().clear();
+export async function signOut() {
+  const { token, clear } = useAuthStore.getState();
+  try {
+    if (token) {
+      await fetch(`${baseUrl}/api/auth/sign-out`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+    }
+  } catch {
+    // Local sign-out must still work when the API is unavailable.
+  } finally {
+    clear();
+  }
 }

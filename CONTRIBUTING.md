@@ -16,10 +16,21 @@ bun run db:up        # local Postgres via Docker
 Run the full check locally — CI runs the same gates:
 
 ```bash
+bun run audit        # high and critical dependency advisories
 bun run lint         # Biome (lint + format check)
 bun run typecheck    # tsc across all workspaces
 bun run test         # Vitest across all workspaces
 bun run build        # tsc + vite build
+```
+
+Or run the same publication check with `bun run verify`.
+
+Changes to authentication, migrations, or API persistence should also be checked
+against a running PostgreSQL instance:
+
+```bash
+bun run db:migrate
+bun run test:integration
 ```
 
 Auto-fix formatting and safe lint issues:

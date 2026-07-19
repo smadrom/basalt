@@ -1,104 +1,127 @@
-<h1 align="center">🪨 Basalt</h1>
+# Basalt
 
-<p align="center">
-  A solid, opinionated <strong>Bun + Elysia + React (TypeScript)</strong> monorepo base
-  <br />to start web/SaaS projects from — instead of scaffolding from zero every time.
-</p>
+Basalt is a compact full-stack TypeScript starter built around Bun, Elysia,
+PostgreSQL, and React. It provides the parts that most small web applications
+need before domain work begins: authentication, database access, a typed API
+client, tests, formatting, and CI.
 
-<p align="center">
-  <a href="https://github.com/smadrom/basalt/actions/workflows/ci.yml"><img src="https://github.com/smadrom/basalt/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
-  <img src="https://img.shields.io/badge/Bun-1.3-black?logo=bun" alt="Bun 1.3" />
-  <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript strict" />
-  <a href="./CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome" /></a>
-</p>
+[![CI](https://github.com/smadrom/basalt/actions/workflows/ci.yml/badge.svg)](https://github.com/smadrom/basalt/actions/workflows/ci.yml)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
----
+## Included
 
-## Why Basalt
+- Bun workspaces managed with Turborepo
+- Elysia API with OpenAPI documentation
+- Better Auth email/password sessions with bearer-token support
+- PostgreSQL access through Drizzle ORM and checked-in migrations
+- React, Vite, Tailwind CSS, and TanStack Query
+- End-to-end API types through Eden Treaty
+- English and Russian localization with i18next
+- Vitest, Biome, Dependabot, and GitHub Actions
+- An authenticated `projects` CRUD example that can be replaced with your own domain
 
-- **End-to-end type safety, zero codegen** — the web app imports the API's `App`
-  type, so every route, body and response is checked at compile time.
-- **Batteries included, domain-free** — auth, database, i18n, theming, data-fetching
-  and CI are wired up; the business logic is left to you.
-- **Fast feedback** — Bun + Turborepo + Biome keep install, lint, test and build snappy.
+## Repository layout
 
-```
-basalt/
-├── apps/
-│   ├── api/      # Elysia API on Bun: Better Auth (bearer) + Drizzle + OpenAPI
-│   └── web/      # React + Vite + Tailwind + TanStack Query + i18n
-├── packages/
-│   └── shared/   # Eden-typed API client, zod contracts, i18n, theme tokens, auth store
-├── docker/       # local Postgres
-└── turbo.json    # task pipeline
+```text
+apps/
+  api/       Elysia application, authentication, routes, and database schema
+  web/       React application
+packages/
+  shared/    API client, contracts, localization, theme tokens, and auth state
+docker/      Local PostgreSQL service
 ```
 
-## Stack
+The web workspace imports the API's `App` type. Request bodies, route parameters,
+and responses are therefore checked without generating a separate client.
 
-| Layer    | Choice |
-|----------|--------|
-| Runtime  | Bun 1.3 |
-| Monorepo | Turborepo + Bun workspaces |
-| API      | Elysia, `@elysiajs/openapi`, `@elysiajs/cors` |
-| Auth     | Better Auth (email/password + bearer token) |
-| DB / ORM | Postgres + Drizzle ORM / Kit |
-| Web      | React 18, Vite 5, Tailwind 3, TanStack Query, react-i18next, Zustand |
-| Types    | Eden Treaty — end-to-end typed client, **no codegen** |
-| Tests    | Vitest |
-| Quality  | Biome (lint + format), GitHub Actions CI, Dependabot |
+## Requirements
 
-The web app imports the API's `App` type via `@basalt/shared`, so every request,
-body and response is type-checked at compile time.
+- [Bun](https://bun.sh/) 1.3.14 or newer
+- Docker or another PostgreSQL 17 instance
 
 ## Quick start
 
 ```bash
 bun install
 cp .env.example .env
-
-# local Postgres (Docker)
 bun run db:up
-cd apps/api && bun run db:push   # or: bun run auth:migrate + db:migrate
-
-# dev (api on :3001, web on :5173)
+bun run db:migrate
 bun run dev
 ```
 
-API docs: http://localhost:3001/openapi
+The API starts on `http://localhost:3001`, the web application on
+`http://localhost:5173`, and the OpenAPI UI is available at
+`http://localhost:3001/openapi`.
 
-## Scripts
+`db:migrate` applies the checked-in Drizzle migrations. During schema development,
+you can use `bun --cwd apps/api run db:push` instead.
 
-| Command | Does |
-|---------|------|
-| `bun run dev` | Run api (`:3001`) and web (`:5173`) in parallel |
-| `bun run lint` | Biome lint + format check (CI gate) |
-| `bun run format` | Biome auto-fix and format |
-| `bun run typecheck` | `tsc` across all workspaces |
-| `bun run test` | Vitest across all workspaces |
-| `bun run build` | Typecheck + Vite build |
-| `bun run verify` | typecheck + test + build |
-| `bun run db:up` / `db:down` | Local Postgres via Docker |
+## Configuration
 
-CI (`.github/workflows/ci.yml`) runs lint → typecheck → test → build on every push and PR.
+Copy `.env.example` to `.env` and review these values:
 
-## The sample resource
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | PostgreSQL connection string |
+| `PORT` | API port |
+| `BETTER_AUTH_URL` | Public base URL of the authentication API |
+| `BETTER_AUTH_SECRET` | Session-signing secret; required in production |
+| `BETTER_AUTH_TRUSTED_ORIGINS` | Additional comma-separated web origins allowed by auth and CORS |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional Google login credentials |
+| `VITE_API_URL` | API URL embedded in the web build |
 
-`projects` is a sample owner-scoped CRUD slice wired end-to-end (DB → Elysia route
-→ Eden client → React screen) to prove the stack. Delete `apps/api/src/db/schema.ts`,
-`apps/api/src/routes/projects.ts`, `packages/shared/src/contracts/project.ts` and the
-home screen UI once you start your own domain.
+Local development automatically permits `localhost:5173` and
+`127.0.0.1:5173`. Other browser origins must be listed explicitly.
 
-## Auth model
+## Commands
 
-Sessions use **bearer tokens** (not cookies): the API stays stateless and
-cross-origin-friendly. The web client stores the token in `localStorage`
-(`@basalt/shared` auth store) and sends it as `Authorization: Bearer <token>`.
+| Command | Purpose |
+| --- | --- |
+| `bun run dev` | Start the API and web development servers |
+| `bun run audit` | Fail on high or critical dependency advisories |
+| `bun run lint` | Run Biome without modifying files |
+| `bun run format` | Apply Biome formatting and safe fixes |
+| `bun run typecheck` | Type-check all workspaces |
+| `bun run test` | Run the database-free unit test suites |
+| `bun run test:integration` | Run the authenticated API smoke test against PostgreSQL |
+| `bun run build` | Build and type-check all workspaces |
+| `bun run verify` | Run the complete publication check |
+| `bun run db:up` / `bun run db:down` | Start or stop local PostgreSQL |
+| `bun run db:generate` | Generate a Drizzle migration |
+| `bun run db:migrate` | Apply checked-in migrations |
+
+## Authentication notes
+
+The example web client stores a bearer token in `localStorage` and attaches it to
+API requests. This keeps the API and browser application easy to run on separate
+origins, but it is a deliberate starter-project tradeoff. Applications with a
+larger browser attack surface should consider same-origin, HTTP-only cookie
+sessions instead.
+
+The API refuses to start in production when the example auth secret is still in
+use. CORS is restricted to the configured trusted origins.
+
+GitHub Actions runs the normal verification gates and a separate PostgreSQL 17
+smoke test. The latter applies the checked-in migrations, creates a user, and
+exercises the authenticated project create/list/delete flow.
+
+## Before deploying
+
+- Replace the example auth secret and database credentials.
+- Set the final API URL and trusted browser origins.
+- Decide whether bearer tokens in browser storage fit your threat model.
+- Replace the sample `projects` resource with your own schema and routes.
+- Run migrations as a separate deployment step.
+- Add rate limiting, email verification, observability, and backups as required by
+  your application.
+
+Basalt is an application starting point, not a hosted service or a substitute for
+a deployment-specific security review.
 
 ## Contributing
 
-Contributions are welcome — see [CONTRIBUTING.md](./CONTRIBUTING.md) and the
-[Code of Conduct](./CODE_OF_CONDUCT.md). For security reports, see [SECURITY.md](./SECURITY.md).
+See [CONTRIBUTING.md](./CONTRIBUTING.md). Security reports should follow
+[SECURITY.md](./SECURITY.md).
 
 ## License
 

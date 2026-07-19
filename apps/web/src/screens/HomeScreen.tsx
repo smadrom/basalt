@@ -52,7 +52,7 @@ export function HomeScreen() {
         <h1 className="text-xl font-semibold">
           {t('home.greeting', { name: user?.name ?? user?.email ?? '' })}
         </h1>
-        <Button variant="ghost" onClick={signOut}>
+        <Button variant="ghost" onClick={() => void signOut()}>
           {t('auth.signOut')}
         </Button>
       </header>

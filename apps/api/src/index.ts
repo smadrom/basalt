@@ -10,10 +10,19 @@ import { cors } from '@elysiajs/cors';
 import { openapi } from '@elysiajs/openapi';
 import { Elysia } from 'elysia';
 import { betterAuthPlugin } from './auth/plugin.ts';
+import { trustedOrigins } from './config/origins.ts';
 import { projectsRoutes } from './routes/projects.ts';
 
 export const app = new Elysia()
-  .use(cors())
+  .use(
+    cors({
+      origin: trustedOrigins,
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Accept', 'Authorization', 'Content-Type'],
+      credentials: false,
+      maxAge: 600,
+    }),
+  )
   .use(
     openapi({
       documentation: {

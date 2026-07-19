@@ -16,5 +16,5 @@ Basalt is a starter template. The most security-relevant areas are:
 - **Database access** (`apps/api/src/db`, route handlers) — query construction.
 - **Secrets** — never commit a real `.env`; `.env.example` holds placeholders only.
 
-When you fork this base for a real project, rotate `BETTER_AUTH_SECRET` and all
-database credentials before deploying.
+The API rejects the example `BETTER_AUTH_SECRET` when `NODE_ENV=production`.
+Replace it and all database credentials before deploying.
