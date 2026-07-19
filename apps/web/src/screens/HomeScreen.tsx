@@ -1,4 +1,4 @@
-import { useAuthStore } from '@basalt/shared';
+import { createProjectInput, useAuthStore } from '@basalt/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,7 +43,8 @@ export function HomeScreen() {
 
   function onCreate(e: FormEvent) {
     e.preventDefault();
-    if (name.trim()) create.mutate(name.trim());
+    const result = createProjectInput.safeParse({ name: name.trim() });
+    if (result.success) create.mutate(result.data.name);
   }
 
   return (
@@ -62,6 +63,7 @@ export function HomeScreen() {
           className="flex-1 rounded-md border border-border bg-bg px-3 py-2"
           placeholder={t('home.namePlaceholder')}
           value={name}
+          maxLength={120}
           onChange={(e) => setName(e.target.value)}
         />
         <Button type="submit" disabled={create.isPending}>

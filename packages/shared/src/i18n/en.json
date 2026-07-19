@@ -1,7 +1,8 @@
 {
   "app": {
     "name": "Basalt",
-    "tagline": "A solid base to build on"
+    "tagline": "A solid base to build on",
+    "loading": "Loading session…"
   },
   "auth": {
     "signIn": "Sign in",

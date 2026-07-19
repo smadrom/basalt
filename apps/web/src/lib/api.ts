@@ -33,6 +33,30 @@ export async function signUp(email: string, password: string, name: string) {
   useAuthStore.getState().setSession(token, user);
 }
 
+export async function restoreSession() {
+  const { token, setUser, clear } = useAuthStore.getState();
+
+  if (!token) return 'unauthenticated' as const;
+
+  try {
+    const response = await fetch(`${baseUrl}/api/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (response.status === 401) {
+      clear();
+      return 'unauthenticated' as const;
+    }
+
+    if (!response.ok) return 'unavailable' as const;
+
+    setUser((await response.json()) as AuthUser);
+    return 'authenticated' as const;
+  } catch {
+    return 'unavailable' as const;
+  }
+}
+
 export async function signOut() {
   const { token, clear } = useAuthStore.getState();
   try {
