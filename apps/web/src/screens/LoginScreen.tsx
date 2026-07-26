@@ -2,6 +2,7 @@ import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/button.tsx';
 import { signIn, signUp } from '../lib/api.ts';
+import { authErrorKey } from '../lib/errors.ts';
 
 export function LoginScreen() {
   const { t } = useTranslation();
@@ -19,8 +20,8 @@ export function LoginScreen() {
     try {
       if (mode === 'in') await signIn(email, password);
       else await signUp(email, password, name || email);
-    } catch {
-      setError(t('auth.error'));
+    } catch (submitError) {
+      setError(t(authErrorKey(submitError)));
     } finally {
       setBusy(false);
     }
