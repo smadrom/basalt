@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { app } from './index.ts';
 
 /**
@@ -39,5 +39,29 @@ describe('@basalt/api', () => {
   it('GET /api/projects without a token is unauthorized', async () => {
     const res = await app.handle(new Request('http://localhost/api/projects'));
     expect(res.status).toBe(401);
+  });
+
+  it('sets baseline security headers on every response', async () => {
+    const res = await app.handle(new Request('http://localhost/health'));
+    expect(res.headers.get('x-content-type-options')).toBe('nosniff');
+    expect(res.headers.get('x-frame-options')).toBe('DENY');
+    expect(res.headers.get('referrer-policy')).toBe('no-referrer');
+    expect(res.headers.get('permissions-policy')).toBe('camera=(), microphone=(), geolocation=()');
+  });
+
+  it('does not expose OpenAPI docs in production', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('DATABASE_URL', 'postgres://u:p@127.0.0.1:5432/app');
+    vi.stubEnv('BETTER_AUTH_URL', 'https://api.example.com');
+    vi.stubEnv('BETTER_AUTH_SECRET', 'production-secret-at-least-32-characters');
+    vi.resetModules();
+
+    const { app: prodApp } = await import('./index.ts');
+    const res = await prodApp.handle(new Request('http://localhost/openapi'));
+
+    expect(res.status).toBe(404);
+
+    vi.unstubAllEnvs();
+    vi.resetModules();
   });
 });

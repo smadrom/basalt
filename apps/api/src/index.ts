@@ -3,7 +3,7 @@
  *
  * - Better Auth (email/password + bearer) mounted at /api/auth/*
  * - Drizzle ORM over Postgres (DATABASE_URL)
- * - Built-in OpenAPI + Swagger UI at /openapi
+ * - OpenAPI + Swagger UI at /openapi (non-production only)
  * - Exports the `App` type for Eden Treaty — typed client on the web, no codegen.
  */
 import { cors } from '@elysiajs/cors';
@@ -13,10 +13,12 @@ import { betterAuthPlugin } from './auth/plugin.ts';
 import { env } from './config/env.ts';
 import { trustedOrigins } from './config/origins.ts';
 import { errorHandler } from './plugins/errors.ts';
+import { securityHeaders } from './plugins/security.ts';
 import { projectsRoutes } from './routes/projects.ts';
 
 export const app = new Elysia()
   .use(errorHandler)
+  .use(securityHeaders)
   .use(
     cors({
       origin: trustedOrigins,
@@ -24,17 +26,6 @@ export const app = new Elysia()
       allowedHeaders: ['Accept', 'Authorization', 'Content-Type'],
       credentials: false,
       maxAge: 600,
-    }),
-  )
-  .use(
-    openapi({
-      documentation: {
-        info: {
-          title: 'Basalt API',
-          version: '0.1.0',
-          description: 'Elysia + Better Auth + Drizzle starter.',
-        },
-      },
     }),
   )
   .get('/health', () => ({ status: 'ok' }), { detail: { summary: 'Health check' } })
@@ -47,6 +38,23 @@ export const app = new Elysia()
 
 /** App type for Eden Treaty (imported by @basalt/shared). */
 export type App = typeof app;
+
+// API docs are a development tool — Swagger UI and the schema stay private in
+// production to keep the exposed surface minimal. Registered after the chain
+// so docs routes never leak into the Eden `App` type.
+if (!env.isProduction) {
+  app.use(
+    openapi({
+      documentation: {
+        info: {
+          title: 'Basalt API',
+          version: '0.1.0',
+          description: 'Elysia + Better Auth + Drizzle starter.',
+        },
+      },
+    }),
+  );
+}
 
 if (import.meta.main) {
   app.listen(env.port);
