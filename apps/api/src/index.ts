@@ -12,6 +12,7 @@ import { Elysia } from 'elysia';
 import { betterAuthPlugin } from './auth/plugin.ts';
 import { env } from './config/env.ts';
 import { trustedOrigins } from './config/origins.ts';
+import { closeDatabase } from './db/index.ts';
 import { errorHandler } from './plugins/errors.ts';
 import { securityHeaders } from './plugins/security.ts';
 import { projectsRoutes } from './routes/projects.ts';
@@ -58,5 +59,16 @@ if (!env.isProduction) {
 
 if (import.meta.main) {
   app.listen(env.port);
-  console.log(`🪨  @basalt/api on http://localhost:${env.port}  (OpenAPI: /openapi)`);
+  console.log(`🪨  @basalt/api on http://localhost:${env.port}`);
+  if (!env.isProduction) console.log('     OpenAPI docs: /openapi');
+
+  const shutdown = async (signal: string) => {
+    console.log(`[api] ${signal} received — closing server and database…`);
+    await app.stop();
+    await closeDatabase();
+    process.exit(0);
+  };
+
+  process.once('SIGTERM', () => void shutdown('SIGTERM'));
+  process.once('SIGINT', () => void shutdown('SIGINT'));
 }
