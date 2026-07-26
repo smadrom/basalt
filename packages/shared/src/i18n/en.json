@@ -2,7 +2,13 @@
   "app": {
     "name": "Basalt",
     "tagline": "A solid base to build on",
-    "loading": "Loading session…"
+    "loading": "Loading session…",
+    "unavailableTitle": "Service unavailable",
+    "unavailableBody": "We can't reach the API right now. Your session is safe — try again in a moment.",
+    "retry": "Retry",
+    "errorTitle": "Something went wrong",
+    "errorBody": "An unexpected error occurred. Reload the page to continue.",
+    "reload": "Reload"
   },
   "auth": {
     "signIn": "Sign in",
@@ -21,6 +27,9 @@
     "namePlaceholder": "Project name",
     "create": "Create",
     "empty": "No projects yet. Create your first one.",
-    "delete": "Delete"
+    "delete": "Delete",
+    "loadError": "Couldn't load projects.",
+    "createError": "Couldn't create the project.",
+    "deleteError": "Couldn't delete the project."
   }
 }

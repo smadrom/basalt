@@ -8,7 +8,8 @@ services:
       POSTGRES_PASSWORD: basalt
       POSTGRES_DB: basalt
     ports:
-      - "5432:5432"
+      # Localhost only — the dev credentials are public knowledge.
+      - "127.0.0.1:5432:5432"
     volumes:
       - basalt-db-data:/var/lib/postgresql/data
     healthcheck:
