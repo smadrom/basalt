@@ -49,6 +49,18 @@ describe('@basalt/api', () => {
     expect(res.headers.get('permissions-policy')).toBe('camera=(), microphone=(), geolocation=()');
   });
 
+  it('sets baseline security headers on error responses', async () => {
+    // The 401 from the auth macro's resolve short-circuit is the error path
+    // available at app level; a 500 from the global onError merges the same
+    // pre-seeded set.headers, so covering one covers both.
+    const res = await app.handle(new Request('http://localhost/api/me'));
+    expect(res.status).toBe(401);
+    expect(res.headers.get('x-content-type-options')).toBe('nosniff');
+    expect(res.headers.get('x-frame-options')).toBe('DENY');
+    expect(res.headers.get('referrer-policy')).toBe('no-referrer');
+    expect(res.headers.get('permissions-policy')).toBe('camera=(), microphone=(), geolocation=()');
+  });
+
   it('does not expose OpenAPI docs in production', async () => {
     vi.stubEnv('NODE_ENV', 'production');
     vi.stubEnv('DATABASE_URL', 'postgres://u:p@127.0.0.1:5432/app');
