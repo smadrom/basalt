@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../components/LanguageSwitcher.tsx';
 import { Button } from '../components/ui/button.tsx';
 import { signIn, signUp } from '../lib/api.ts';
 import { authErrorKey } from '../lib/errors.ts';
@@ -77,6 +78,8 @@ export function LoginScreen() {
       <Button variant="ghost" onClick={() => setMode(mode === 'in' ? 'up' : 'in')}>
         {mode === 'in' ? t('auth.needAccount') : t('auth.haveAccount')}
       </Button>
+
+      <LanguageSwitcher />
     </div>
   );
 }
