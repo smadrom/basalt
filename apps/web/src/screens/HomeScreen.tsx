@@ -70,9 +70,30 @@ export function HomeScreen() {
           {t('home.create')}
         </Button>
       </form>
+      {create.isError && (
+        <p role="alert" className="text-sm text-danger">
+          {t('home.createError')}
+        </p>
+      )}
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-muted">{t('home.projects')}</h2>
+        {projects.isPending && <p className="text-muted">{t('app.loading')}</p>}
+        {projects.isError && (
+          <div className="flex items-center gap-3">
+            <p role="alert" className="text-sm text-danger">
+              {t('home.loadError')}
+            </p>
+            <Button variant="ghost" onClick={() => void projects.refetch()}>
+              {t('app.retry')}
+            </Button>
+          </div>
+        )}
+        {remove.isError && (
+          <p role="alert" className="text-sm text-danger">
+            {t('home.deleteError')}
+          </p>
+        )}
         {projects.data?.length === 0 && <p className="text-muted">{t('home.empty')}</p>}
         {projects.data?.map((project) => (
           <div
@@ -80,7 +101,11 @@ export function HomeScreen() {
             className="flex items-center justify-between rounded-md border border-border px-3 py-2"
           >
             <span>{project.name}</span>
-            <Button variant="danger" onClick={() => remove.mutate(project.id)}>
+            <Button
+              variant="danger"
+              disabled={remove.isPending}
+              onClick={() => remove.mutate(project.id)}
+            >
               {t('home.delete')}
             </Button>
           </div>

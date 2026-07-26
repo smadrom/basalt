@@ -27,6 +27,9 @@
     "namePlaceholder": "Project name",
     "create": "Create",
     "empty": "No projects yet. Create your first one.",
-    "delete": "Delete"
+    "delete": "Delete",
+    "loadError": "Couldn't load projects.",
+    "createError": "Couldn't create the project.",
+    "deleteError": "Couldn't delete the project."
   }
 }
