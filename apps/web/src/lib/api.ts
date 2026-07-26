@@ -1,4 +1,5 @@
 import { type AuthUser, createApiClient, useAuthStore } from '@basalt/shared';
+import { AuthError, type AuthErrorCode } from './errors.ts';
 
 const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
@@ -14,12 +15,34 @@ interface AuthResponse {
 }
 
 async function authRequest(path: '/sign-in/email' | '/sign-up/email', body: object) {
-  const res = await fetch(`${baseUrl}/api/auth${path}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`auth_failed_${res.status}`);
+  let res: Response;
+  try {
+    res = await fetch(`${baseUrl}/api/auth${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    // fetch itself rejected — DNS, connection refused, CORS.
+    throw new AuthError('NETWORK');
+  }
+
+  if (!res.ok) {
+    let code: AuthErrorCode = 'UNKNOWN';
+    try {
+      const errorBody = (await res.json()) as { code?: string };
+      if (
+        errorBody.code === 'INVALID_EMAIL_OR_PASSWORD' ||
+        errorBody.code === 'USER_ALREADY_EXISTS'
+      ) {
+        code = errorBody.code;
+      }
+    } catch {
+      // Non-JSON error body — stays UNKNOWN.
+    }
+    throw new AuthError(code);
+  }
+
   return (await res.json()) as AuthResponse;
 }
 

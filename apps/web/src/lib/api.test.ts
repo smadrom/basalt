@@ -1,6 +1,6 @@
 import { useAuthStore } from '@basalt/shared';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { restoreSession, signOut } from './api.ts';
+import { restoreSession, signIn, signOut, signUp } from './api.ts';
 
 afterEach(() => {
   useAuthStore.getState().clear();
@@ -87,5 +87,58 @@ describe('restoreSession', () => {
 
     await expect(restoreSession()).resolves.toBe('unavailable');
     expect(useAuthStore.getState().token).toBe('session-token');
+  });
+});
+
+describe('signIn', () => {
+  it('rejects with a typed INVALID_EMAIL_OR_PASSWORD error', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            JSON.stringify({ code: 'INVALID_EMAIL_OR_PASSWORD', message: 'Invalid email' }),
+            { status: 401 },
+          ),
+        ),
+    );
+
+    await expect(signIn('a@b.c', 'x')).rejects.toMatchObject({
+      name: 'AuthError',
+      code: 'INVALID_EMAIL_OR_PASSWORD',
+    });
+  });
+
+  it('rejects with NETWORK when the API cannot be reached', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('fetch failed')));
+
+    await expect(signIn('a@b.c', 'x')).rejects.toMatchObject({
+      name: 'AuthError',
+      code: 'NETWORK',
+    });
+  });
+
+  it('rejects with UNKNOWN for unrecognized error bodies', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('oops', { status: 500 })));
+
+    await expect(signIn('a@b.c', 'x')).rejects.toMatchObject({ code: 'UNKNOWN' });
+  });
+});
+
+describe('signUp', () => {
+  it('rejects with USER_ALREADY_EXISTS when the email is taken', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ code: 'USER_ALREADY_EXISTS', message: 'taken' }), {
+          status: 422,
+        }),
+      ),
+    );
+
+    await expect(signUp('a@b.c', 'x', 'A')).rejects.toMatchObject({
+      code: 'USER_ALREADY_EXISTS',
+    });
   });
 });
