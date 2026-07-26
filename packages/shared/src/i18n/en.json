@@ -14,11 +14,15 @@
     "signIn": "Sign in",
     "signUp": "Sign up",
     "signOut": "Sign out",
+    "name": "Name",
     "email": "Email",
     "password": "Password",
     "needAccount": "Need an account? Sign up",
     "haveAccount": "Have an account? Sign in",
-    "error": "Authentication failed"
+    "error": "Authentication failed",
+    "invalidCredentials": "Wrong email or password",
+    "emailTaken": "This email is already registered",
+    "unavailable": "Service unavailable — try again in a moment"
   },
   "home": {
     "greeting": "Welcome, {{name}}",

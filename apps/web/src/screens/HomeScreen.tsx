@@ -2,6 +2,7 @@ import { createProjectInput, useAuthStore } from '@basalt/shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../components/LanguageSwitcher.tsx';
 import { Button } from '../components/ui/button.tsx';
 import { api, signOut } from '../lib/api.ts';
 
@@ -53,15 +54,19 @@ export function HomeScreen() {
         <h1 className="text-xl font-semibold">
           {t('home.greeting', { name: user?.name ?? user?.email ?? '' })}
         </h1>
-        <Button variant="ghost" onClick={() => void signOut()}>
-          {t('auth.signOut')}
-        </Button>
+        <div className="flex items-center gap-1">
+          <LanguageSwitcher />
+          <Button variant="ghost" onClick={() => void signOut()}>
+            {t('auth.signOut')}
+          </Button>
+        </div>
       </header>
 
       <form onSubmit={onCreate} className="flex gap-2">
         <input
           className="flex-1 rounded-md border border-border bg-bg px-3 py-2"
           placeholder={t('home.namePlaceholder')}
+          aria-label={t('home.namePlaceholder')}
           value={name}
           maxLength={120}
           onChange={(e) => setName(e.target.value)}

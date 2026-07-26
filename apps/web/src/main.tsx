@@ -7,7 +7,7 @@ import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 import { queryClient } from './lib/queryClient.ts';
 import './index.css';
 
-initI18n('en');
+initI18n();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

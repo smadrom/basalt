@@ -1,7 +1,9 @@
 import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '../components/LanguageSwitcher.tsx';
 import { Button } from '../components/ui/button.tsx';
 import { signIn, signUp } from '../lib/api.ts';
+import { authErrorKey } from '../lib/errors.ts';
 
 export function LoginScreen() {
   const { t } = useTranslation();
@@ -19,8 +21,8 @@ export function LoginScreen() {
     try {
       if (mode === 'in') await signIn(email, password);
       else await signUp(email, password, name || email);
-    } catch {
-      setError(t('auth.error'));
+    } catch (submitError) {
+      setError(t(authErrorKey(submitError)));
     } finally {
       setBusy(false);
     }
@@ -37,7 +39,8 @@ export function LoginScreen() {
         {mode === 'up' && (
           <input
             className="rounded-md border border-border bg-bg px-3 py-2"
-            placeholder="Name"
+            placeholder={t('auth.name')}
+            aria-label={t('auth.name')}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -46,6 +49,7 @@ export function LoginScreen() {
           className="rounded-md border border-border bg-bg px-3 py-2"
           type="email"
           placeholder={t('auth.email')}
+          aria-label={t('auth.email')}
           value={email}
           required
           onChange={(e) => setEmail(e.target.value)}
@@ -54,12 +58,17 @@ export function LoginScreen() {
           className="rounded-md border border-border bg-bg px-3 py-2"
           type="password"
           placeholder={t('auth.password')}
+          aria-label={t('auth.password')}
           value={password}
           required
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        {error && <p className="text-sm text-danger">{error}</p>}
+        {error && (
+          <p role="alert" className="text-sm text-danger">
+            {error}
+          </p>
+        )}
 
         <Button type="submit" disabled={busy}>
           {mode === 'in' ? t('auth.signIn') : t('auth.signUp')}
@@ -69,6 +78,8 @@ export function LoginScreen() {
       <Button variant="ghost" onClick={() => setMode(mode === 'in' ? 'up' : 'in')}>
         {mode === 'in' ? t('auth.needAccount') : t('auth.haveAccount')}
       </Button>
+
+      <LanguageSwitcher />
     </div>
   );
 }
