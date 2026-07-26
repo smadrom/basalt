@@ -108,4 +108,19 @@ describe('authenticated project workflow', () => {
 
     expect(authenticatedResponse.status).toBe(401);
   });
+
+  it('rate limits repeated sign-in attempts from the same client', async () => {
+    let lastStatus = 0;
+    for (let attempt = 0; attempt < 11; attempt += 1) {
+      const res = await request('/api/auth/sign-in/email', {
+        method: 'POST',
+        body: JSON.stringify({
+          email: `brute-${randomUUID()}@example.com`,
+          password: 'wrong-password-123',
+        }),
+      });
+      lastStatus = res.status;
+    }
+    expect(lastStatus).toBe(429);
+  });
 });

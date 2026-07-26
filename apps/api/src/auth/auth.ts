@@ -36,4 +36,17 @@ export const auth = betterAuth({
         }
       : undefined,
   plugins: [bearer()],
+  // Brute-force protection on credential endpoints. `enabled: true` is
+  // explicit because the default is production-only. Memory storage is
+  // per-instance — for multi-instance deployments switch to secondary
+  // storage (e.g. Redis) via better-auth's `secondaryStorage` option.
+  rateLimit: {
+    enabled: true,
+    window: 60,
+    max: 100,
+    customRules: {
+      '/sign-in/email': { window: 60, max: 10 },
+      '/sign-up/email': { window: 60, max: 10 },
+    },
+  },
 });
