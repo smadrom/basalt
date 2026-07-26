@@ -10,6 +10,7 @@ import { cors } from '@elysiajs/cors';
 import { openapi } from '@elysiajs/openapi';
 import { Elysia } from 'elysia';
 import { betterAuthPlugin } from './auth/plugin.ts';
+import { env } from './config/env.ts';
 import { trustedOrigins } from './config/origins.ts';
 import { projectsRoutes } from './routes/projects.ts';
 
@@ -45,9 +46,7 @@ export const app = new Elysia()
 /** App type for Eden Treaty (imported by @basalt/shared). */
 export type App = typeof app;
 
-const port = Number(process.env.PORT ?? 3001);
-
 if (import.meta.main) {
-  app.listen(port);
-  console.log(`🪨  @basalt/api on http://localhost:${port}  (OpenAPI: /openapi)`);
+  app.listen(env.port);
+  console.log(`🪨  @basalt/api on http://localhost:${env.port}  (OpenAPI: /openapi)`);
 }

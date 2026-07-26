@@ -8,16 +8,10 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { bearer } from 'better-auth/plugins';
+import { env } from '../config/env.ts';
 import { trustedOrigins } from '../config/origins.ts';
 import * as authSchema from '../db/auth-schema.ts';
 import { db } from '../db/index.ts';
-
-const developmentSecret = 'dev-only-change-before-deploying';
-const secret = process.env.BETTER_AUTH_SECRET?.trim() || developmentSecret;
-
-if (process.env.NODE_ENV === 'production' && secret === developmentSecret) {
-  throw new Error('BETTER_AUTH_SECRET must be set to a unique value in production');
-}
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim();
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
@@ -27,9 +21,9 @@ if (Boolean(googleClientId) !== Boolean(googleClientSecret)) {
 }
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3001',
+  baseURL: env.betterAuthUrl,
   trustedOrigins,
-  secret,
+  secret: env.betterAuthSecret,
   database: drizzleAdapter(db, { provider: 'pg', schema: authSchema }),
   emailAndPassword: { enabled: true },
   socialProviders:
