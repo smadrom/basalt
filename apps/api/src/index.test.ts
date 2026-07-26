@@ -33,6 +33,7 @@ describe('@basalt/api', () => {
   it('GET /api/me without a token is unauthorized', async () => {
     const res = await app.handle(new Request('http://localhost/api/me'));
     expect(res.status).toBe(401);
+    expect(await res.json()).toEqual({ error: 'unauthorized' });
   });
 
   it('GET /api/projects without a token is unauthorized', async () => {

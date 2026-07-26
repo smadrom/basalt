@@ -12,9 +12,11 @@ import { Elysia } from 'elysia';
 import { betterAuthPlugin } from './auth/plugin.ts';
 import { env } from './config/env.ts';
 import { trustedOrigins } from './config/origins.ts';
+import { errorHandler } from './plugins/errors.ts';
 import { projectsRoutes } from './routes/projects.ts';
 
 export const app = new Elysia()
+  .use(errorHandler)
   .use(
     cors({
       origin: trustedOrigins,
