@@ -62,6 +62,7 @@ export function HomeScreen() {
         <input
           className="flex-1 rounded-md border border-border bg-bg px-3 py-2"
           placeholder={t('home.namePlaceholder')}
+          aria-label={t('home.namePlaceholder')}
           value={name}
           maxLength={120}
           onChange={(e) => setName(e.target.value)}

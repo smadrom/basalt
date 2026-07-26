@@ -84,4 +84,12 @@ describe('HomeScreen', () => {
       expect(screen.getByRole('alert')).toHaveTextContent("Couldn't create the project."),
     );
   });
+
+  it('labels the project name input accessibly', async () => {
+    mocks.get.mockResolvedValue({ data: { data: [] }, error: undefined });
+
+    renderHome();
+
+    expect(screen.getByLabelText('Project name')).toBeTruthy();
+  });
 });

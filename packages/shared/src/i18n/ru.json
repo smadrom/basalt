@@ -14,6 +14,7 @@
     "signIn": "Войти",
     "signUp": "Регистрация",
     "signOut": "Выйти",
+    "name": "Имя",
     "email": "Email",
     "password": "Пароль",
     "needAccount": "Нет аккаунта? Зарегистрируйтесь",
