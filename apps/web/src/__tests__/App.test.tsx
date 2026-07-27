@@ -55,4 +55,16 @@ describe('App', () => {
 
     await waitFor(() => expect(restoreSessionMock).toHaveBeenCalledTimes(2));
   });
+
+  it('syncs the document lang with the active locale', async () => {
+    document.documentElement.lang = 'ru';
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() => expect(document.documentElement.lang).toBe('en'));
+  });
 });
