@@ -2,11 +2,16 @@ version: 2
 updates:
   # Policy: minor/patch updates arrive grouped weekly. Majors are NOT ignored —
   # they arrive as their own PRs (outside the groups) and are reviewed individually.
+  # Cooldown: fresh releases wait 3 days (7 for majors) before a PR opens, so a
+  # single release burst can't flood the queue.
   - package-ecosystem: bun
     directory: /
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
+    cooldown:
+      default-days: 3
+      semver-major-days: 7
     groups:
       dev-dependencies:
         dependency-type: development
@@ -23,3 +28,5 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 3
