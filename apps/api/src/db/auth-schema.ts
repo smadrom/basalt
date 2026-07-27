@@ -3,7 +3,7 @@
  * tables. Generated shape from `@better-auth/cli generate`; keep in sync with the
  * plugins enabled in `auth/auth.ts`.
  *
- * Apply to the database: `bun run auth:migrate` (or `db:push` in dev).
+ * Apply to the database: `bun run db:migrate` (or `db:push` in dev).
  */
 import { boolean, index, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 

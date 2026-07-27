@@ -3,7 +3,8 @@
  *
  * Bearer (not cookie) is the default so the API stays stateless and works
  * cross-origin: the web client stores the token in localStorage and sends it as
- * `Authorization: Bearer <token>`. Apply schema with `bun run auth:migrate`.
+ * `Authorization: Bearer <token>`. Schema is owned by Drizzle migrations
+ * (`bun run db:generate` to author, `bun run db:migrate` to apply).
  */
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
