@@ -16,7 +16,7 @@
     "i18next": "^26.3.6",
     "react-i18next": "^17.0.11",
     "zod": "^4.4.3",
-    "zustand": "^4.5.2"
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@basalt/api": "*",
