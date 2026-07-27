@@ -51,7 +51,7 @@ bun run dev
 
 The API starts on `http://localhost:3001`, the web application on
 `http://localhost:5173`, and the OpenAPI UI is available at
-`http://localhost:3001/openapi`.
+`http://localhost:3001/openapi` (development only — disabled in production).
 
 `db:migrate` applies the checked-in Drizzle migrations. During schema development,
 you can use `bun --cwd apps/api run db:push` instead.
@@ -66,7 +66,7 @@ Copy `.env.example` to `.env` and review these values:
 | `PORT` | API port |
 | `BETTER_AUTH_URL` | Public base URL of the authentication API |
 | `BETTER_AUTH_SECRET` | Session-signing secret; required in production |
-| `BETTER_AUTH_TRUSTED_ORIGINS` | Additional comma-separated web origins allowed by auth and CORS |
+| `BETTER_AUTH_TRUSTED_ORIGINS` | Comma-separated web origins allowed by auth and CORS; required in production |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Optional Google login credentials |
 | `VITE_API_URL` | API URL embedded in the web build |
 

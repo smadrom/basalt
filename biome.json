@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "ignore": ["dist", ".turbo", "drizzle/**", "**/*.json"]
+    "ignore": ["dist", ".turbo", "apps/api/drizzle/**"]
   },
   "organizeImports": {
     "enabled": false
