@@ -64,6 +64,8 @@ if (import.meta.main) {
 
   const shutdown = async (signal: string) => {
     console.log(`[api] ${signal} received — closing server and database…`);
+    // If app.stop() or a hung in-flight request stalls the close, force-exit.
+    setTimeout(() => process.exit(1), 10_000).unref();
     await app.stop();
     await closeDatabase();
     process.exit(0);

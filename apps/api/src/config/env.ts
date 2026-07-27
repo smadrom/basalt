@@ -39,10 +39,23 @@ function betterAuthSecret(): string {
   return secret;
 }
 
+function googleOAuth(): { clientId: string; clientSecret: string } | undefined {
+  const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
+  if (Boolean(clientId) !== Boolean(clientSecret)) {
+    throw new Error(
+      '[config] GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be configured together',
+    );
+  }
+  if (!clientId || !clientSecret) return undefined;
+  return { clientId, clientSecret };
+}
+
 export const env = {
   isProduction,
   port: parsePort(process.env.PORT),
   databaseUrl: optional('DATABASE_URL', 'postgres://basalt:basalt@127.0.0.1:5432/basalt'),
   betterAuthUrl: optional('BETTER_AUTH_URL', 'http://localhost:3001'),
   betterAuthSecret: betterAuthSecret(),
+  google: googleOAuth(),
 } as const;

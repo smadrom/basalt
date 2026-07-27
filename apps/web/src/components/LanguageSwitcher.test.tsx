@@ -15,10 +15,10 @@ describe('LanguageSwitcher', () => {
   it('offers the other locale and persists the switch', async () => {
     render(<LanguageSwitcher />);
 
-    fireEvent.click(screen.getByRole('button', { name: 'RU' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Switch to Russian' }));
 
     await waitFor(() => expect(i18n.language).toBe('ru'));
     expect(localStorage.getItem('basalt-locale')).toBe('ru');
-    expect(await screen.findByRole('button', { name: 'EN' })).toBeTruthy();
+    expect(await screen.findByRole('button', { name: 'Переключиться на английский' })).toBeTruthy();
   });
 });

@@ -9,6 +9,7 @@ the bar is "clean, typed, and tested" rather than feature-complete.
 bun install
 cp .env.example .env
 bun run db:up        # local Postgres via Docker
+bun run db:migrate  # apply checked-in migrations
 ```
 
 ## Before you open a PR
@@ -43,8 +44,9 @@ bun run format
 
 - **TypeScript strict** everywhere; no `any` unless justified with a comment.
 - **Tests are required** for new behaviour (api routes, shared contracts, web logic).
-- **Keep the boundaries clean:** `apps/web` and `apps/api` talk only through the
-  `App` type exported by `@basalt/api` and re-exported via `@basalt/shared`.
+- **Keep the boundaries clean:** `apps/web` never imports `apps/api` directly —
+  API types flow from `@basalt/api` through `@basalt/shared`; web imports only
+  `@basalt/shared`.
 - **Conventional-ish commits** are appreciated (`feat:`, `fix:`, `chore:`, `docs:`)
   but not enforced.
 

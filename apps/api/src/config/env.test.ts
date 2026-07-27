@@ -64,4 +64,29 @@ describe('env config', () => {
 
     await expect(importEnv()).rejects.toThrow('PORT');
   });
+
+  it('throws when only one Google credential is set', async () => {
+    vi.stubEnv('GOOGLE_CLIENT_ID', 'google-id');
+    vi.stubEnv('GOOGLE_CLIENT_SECRET', '');
+
+    await expect(importEnv()).rejects.toThrow('GOOGLE_CLIENT');
+  });
+
+  it('exposes both Google credentials when configured', async () => {
+    vi.stubEnv('GOOGLE_CLIENT_ID', 'google-id');
+    vi.stubEnv('GOOGLE_CLIENT_SECRET', 'google-secret');
+
+    const { env } = await importEnv();
+
+    expect(env.google).toEqual({ clientId: 'google-id', clientSecret: 'google-secret' });
+  });
+
+  it('leaves Google OAuth disabled when neither credential is set', async () => {
+    vi.stubEnv('GOOGLE_CLIENT_ID', '');
+    vi.stubEnv('GOOGLE_CLIENT_SECRET', '');
+
+    const { env } = await importEnv();
+
+    expect(env.google).toBeUndefined();
+  });
 });

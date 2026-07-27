@@ -27,7 +27,6 @@
   "home": {
     "greeting": "Welcome, {{name}}",
     "projects": "Projects",
-    "newProject": "New project",
     "namePlaceholder": "Project name",
     "create": "Create",
     "empty": "No projects yet. Create your first one.",
@@ -35,5 +34,9 @@
     "loadError": "Couldn't load projects.",
     "createError": "Couldn't create the project.",
     "deleteError": "Couldn't delete the project."
+  },
+  "language": {
+    "switchToEnglish": "Switch to English",
+    "switchToRussian": "Switch to Russian"
   }
 }

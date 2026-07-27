@@ -45,15 +45,21 @@ export const projectsRoutes = new Elysia({ prefix: '/api/projects', tags: ['proj
   .post(
     '/',
     async ({ user, body, status }) => {
+      const name = body.name.trim();
+      if (!name) return status(422, { error: 'invalid_name' });
       const [row] = await db
         .insert(projects)
-        .values({ id: newId(), ownerId: user.id, name: body.name })
+        .values({ id: newId(), ownerId: user.id, name })
         .returning();
       return status(201, serialize(row));
     },
     {
       auth: true,
       body: t.Object({ name: t.String({ minLength: 1, maxLength: 120 }) }),
+      response: {
+        201: ProjectModel,
+        422: t.Object({ error: t.String() }),
+      },
       detail: { summary: 'Create a project' },
     },
   )
@@ -70,6 +76,10 @@ export const projectsRoutes = new Elysia({ prefix: '/api/projects', tags: ['proj
     {
       auth: true,
       params: t.Object({ id: t.String() }),
+      response: {
+        200: t.Object({ deleted: t.Boolean() }),
+        404: t.Object({ error: t.String() }),
+      },
       detail: { summary: 'Delete a project owned by the user' },
     },
   );

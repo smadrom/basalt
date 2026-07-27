@@ -22,3 +22,6 @@ bun.lockb
 
 # drizzle local artifacts kept; ignore studio cache
 .drizzle/
+
+# Local planning docs — kept uncommitted by convention
+docs/

@@ -38,4 +38,34 @@ describe('queryClient auth handling', () => {
 
     expect(useAuthStore.getState().token).toBe('valid-token');
   });
+
+  it('does not retry a 401', async () => {
+    let calls = 0;
+    await expect(
+      queryClient.fetchQuery({
+        queryKey: ['test-401-no-retry'],
+        queryFn: () => {
+          calls += 1;
+          return Promise.reject({ status: 401 });
+        },
+      }),
+    ).rejects.toEqual({ status: 401 });
+
+    expect(calls).toBe(1);
+  });
+
+  it('retries a transient failure once', async () => {
+    let calls = 0;
+    await expect(
+      queryClient.fetchQuery({
+        queryKey: ['test-500-retry'],
+        queryFn: () => {
+          calls += 1;
+          return Promise.reject({ status: 500 });
+        },
+      }),
+    ).rejects.toEqual({ status: 500 });
+
+    expect(calls).toBe(2);
+  });
 });

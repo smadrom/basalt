@@ -12,6 +12,11 @@ export const queryClient = new QueryClient({
   queryCache: new QueryCache({ onError: onAuthError }),
   mutationCache: new MutationCache({ onError: onAuthError }),
   defaultOptions: {
-    queries: { staleTime: 30_000, retry: 1 },
+    queries: {
+      staleTime: 30_000,
+      // One retry for transient failures — but never a 401: the token is dead
+      // and the global handler is already clearing the session.
+      retry: (failureCount, error) => failureCount < 1 && !isUnauthorized(error),
+    },
   },
 });

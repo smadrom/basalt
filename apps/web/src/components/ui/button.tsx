@@ -13,9 +13,10 @@ const variants: Record<Variant, string> = {
   danger: 'bg-transparent text-danger hover:bg-danger/10',
 };
 
-export function Button({ variant = 'primary', className, ...props }: ButtonProps) {
+export function Button({ variant = 'primary', type = 'button', className, ...props }: ButtonProps) {
   return (
     <button
+      type={type}
       className={clsx(
         'inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition disabled:opacity-50',
         variants[variant],
