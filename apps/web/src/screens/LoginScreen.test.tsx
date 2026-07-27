@@ -93,4 +93,16 @@ describe('LoginScreen', () => {
       'Service unavailable — try again in a moment',
     );
   });
+
+  it('hints password managers with autocomplete tokens', () => {
+    render(<LoginScreen />);
+
+    expect(screen.getByLabelText('Email')).toHaveAttribute('autocomplete', 'email');
+    expect(screen.getByLabelText('Password')).toHaveAttribute('autocomplete', 'current-password');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Need an account? Sign up' }));
+
+    expect(screen.getByLabelText('Name')).toHaveAttribute('autocomplete', 'name');
+    expect(screen.getByLabelText('Password')).toHaveAttribute('autocomplete', 'new-password');
+  });
 });

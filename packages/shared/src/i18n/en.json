@@ -35,5 +35,9 @@
     "loadError": "Couldn't load projects.",
     "createError": "Couldn't create the project.",
     "deleteError": "Couldn't delete the project."
+  },
+  "language": {
+    "switchToEnglish": "Switch to English",
+    "switchToRussian": "Switch to Russian"
   }
 }

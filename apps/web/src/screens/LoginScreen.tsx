@@ -41,6 +41,7 @@ export function LoginScreen() {
             className="rounded-md border border-border bg-bg px-3 py-2"
             placeholder={t('auth.name')}
             aria-label={t('auth.name')}
+            autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -50,6 +51,7 @@ export function LoginScreen() {
           type="email"
           placeholder={t('auth.email')}
           aria-label={t('auth.email')}
+          autoComplete="email"
           value={email}
           required
           onChange={(e) => setEmail(e.target.value)}
@@ -59,6 +61,7 @@ export function LoginScreen() {
           type="password"
           placeholder={t('auth.password')}
           aria-label={t('auth.password')}
+          autoComplete={mode === 'in' ? 'current-password' : 'new-password'}
           value={password}
           required
           onChange={(e) => setPassword(e.target.value)}
