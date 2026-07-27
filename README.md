@@ -27,7 +27,7 @@ apps/
   api/       Elysia application, authentication, routes, and database schema
   web/       React application
 packages/
-  shared/    API client, contracts, localization, theme tokens, and auth state
+  shared/    API client, contracts, localization, and auth state
 docker/      Local PostgreSQL service
 ```
 

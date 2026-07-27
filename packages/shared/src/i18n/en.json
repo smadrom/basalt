@@ -27,7 +27,6 @@
   "home": {
     "greeting": "Welcome, {{name}}",
     "projects": "Projects",
-    "newProject": "New project",
     "namePlaceholder": "Project name",
     "create": "Create",
     "empty": "No projects yet. Create your first one.",
