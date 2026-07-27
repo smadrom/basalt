@@ -22,6 +22,13 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
+function fillSignInForm(password = 'secret-123') {
+  fireEvent.change(screen.getByLabelText('Email'), {
+    target: { value: 'pavel@example.com' },
+  });
+  fireEvent.change(screen.getByLabelText('Password'), { target: { value: password } });
+}
+
 describe('LoginScreen', () => {
   it('labels the sign-in fields accessibly', () => {
     render(<LoginScreen />);
@@ -43,10 +50,7 @@ describe('LoginScreen', () => {
     mocks.signIn.mockRejectedValue(new Error('nope'));
     render(<LoginScreen />);
 
-    fireEvent.change(screen.getByLabelText('Email'), {
-      target: { value: 'pavel@example.com' },
-    });
-    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'secret-123' } });
+    fillSignInForm();
     fireEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 
     await waitFor(() => expect(screen.getByRole('alert')).toBeTruthy());
@@ -56,10 +60,7 @@ describe('LoginScreen', () => {
     mocks.signIn.mockRejectedValue(new AuthError('INVALID_EMAIL_OR_PASSWORD'));
     render(<LoginScreen />);
 
-    fireEvent.change(screen.getByLabelText('Email'), {
-      target: { value: 'pavel@example.com' },
-    });
-    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'wrong-123' } });
+    fillSignInForm('wrong-123');
     fireEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Wrong email or password');
@@ -70,10 +71,7 @@ describe('LoginScreen', () => {
     render(<LoginScreen />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Need an account? Sign up' }));
-    fireEvent.change(screen.getByLabelText('Email'), {
-      target: { value: 'pavel@example.com' },
-    });
-    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'secret-123' } });
+    fillSignInForm();
     fireEvent.click(screen.getByRole('button', { name: 'Sign up' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent('This email is already registered');
@@ -83,10 +81,7 @@ describe('LoginScreen', () => {
     mocks.signIn.mockRejectedValue(new AuthError('NETWORK'));
     render(<LoginScreen />);
 
-    fireEvent.change(screen.getByLabelText('Email'), {
-      target: { value: 'pavel@example.com' },
-    });
-    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'secret-123' } });
+    fillSignInForm();
     fireEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(

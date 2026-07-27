@@ -8,6 +8,7 @@ import { queryClient } from '../lib/queryClient.ts';
 
 vi.mock('../lib/api.ts', () => ({
   restoreSession: vi.fn(),
+  signOut: vi.fn(),
 }));
 
 const restoreSessionMock = vi.mocked(restoreSession);
@@ -16,8 +17,13 @@ beforeAll(() => {
   initI18n('en');
 });
 
-afterEach(() => {
-  useAuthStore.getState().clear();
+afterEach(async () => {
+  // Wrap in act: tests unmount only in RTL's cleanup hook (which runs after
+  // this one), so store updates here would otherwise hit the still-mounted
+  // App outside act and trigger act() warnings.
+  await act(async () => {
+    useAuthStore.getState().clear();
+  });
   vi.clearAllMocks();
 });
 
@@ -48,12 +54,14 @@ describe('App', () => {
         <App />
       </QueryClientProvider>,
     );
+    await act(async () => {});
 
-    expect(await screen.findByText('Service unavailable')).toBeTruthy();
+    expect(screen.getByText('Service unavailable')).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    await act(async () => {});
 
-    await waitFor(() => expect(restoreSessionMock).toHaveBeenCalledTimes(2));
+    expect(restoreSessionMock).toHaveBeenCalledTimes(2);
   });
 
   it('syncs the document lang with the active locale', async () => {
