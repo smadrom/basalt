@@ -1,5 +1,9 @@
 name: CI
 
+# paths-ignore note: a workflow skipped by path filtering creates NO check runs,
+# so a docs-only PR hangs at "Expected" if these checks are marked required in
+# branch protection. If you enable required checks, either remove paths-ignore
+# or add an always-run change-detection job gating the real jobs.
 on:
   push:
     branches: [main]
