@@ -47,6 +47,9 @@ describe('@basalt/api', () => {
     expect(res.headers.get('x-frame-options')).toBe('DENY');
     expect(res.headers.get('referrer-policy')).toBe('no-referrer');
     expect(res.headers.get('permissions-policy')).toBe('camera=(), microphone=(), geolocation=()');
+    expect(res.headers.get('strict-transport-security')).toBe(
+      'max-age=31536000; includeSubDomains',
+    );
   });
 
   it('sets baseline security headers on error responses', async () => {
@@ -59,6 +62,9 @@ describe('@basalt/api', () => {
     expect(res.headers.get('x-frame-options')).toBe('DENY');
     expect(res.headers.get('referrer-policy')).toBe('no-referrer');
     expect(res.headers.get('permissions-policy')).toBe('camera=(), microphone=(), geolocation=()');
+    expect(res.headers.get('strict-transport-security')).toBe(
+      'max-age=31536000; includeSubDomains',
+    );
   });
 
   it('does not expose OpenAPI docs in production', async () => {

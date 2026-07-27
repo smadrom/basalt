@@ -166,6 +166,23 @@ describe('authenticated project workflow', () => {
     );
     expect(tooLong.status).toBe(422);
 
+    const whitespaceOnly = await request(
+      '/api/projects',
+      { method: 'POST', body: JSON.stringify({ name: '   ' }) },
+      token,
+    );
+    expect(whitespaceOnly.status).toBe(422);
+
+    const padded = await request(
+      '/api/projects',
+      { method: 'POST', body: JSON.stringify({ name: '  padded name  ' }) },
+      token,
+    );
+    expect(padded.status).toBe(201);
+    const paddedProject = (await padded.json()) as { id: string; name: string };
+    expect(paddedProject.name).toBe('padded name');
+    await request(`/api/projects/${paddedProject.id}`, { method: 'DELETE' }, token);
+
     const missing = await request(`/api/projects/p_${randomUUID()}`, { method: 'DELETE' }, token);
     expect(missing.status).toBe(404);
     expect(await missing.json()).toEqual({ error: 'not_found' });

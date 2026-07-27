@@ -43,4 +43,13 @@ describe('errorHandler', () => {
     expect(res.status).toBe(422);
     expect(await res.text()).not.toBe('internal_error');
   });
+
+  it('returns a JSON body for unknown routes', async () => {
+    const app = new Elysia().use(errorHandler).get('/typed', () => 'ok');
+
+    const res = await app.handle(new Request('http://localhost/nope'));
+
+    expect(res.status).toBe(404);
+    expect(await res.json()).toEqual({ error: 'not_found' });
+  });
 });

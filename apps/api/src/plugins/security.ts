@@ -16,6 +16,8 @@ export const securityHeaders = new Elysia({ name: 'security-headers' })
     set.headers['x-frame-options'] = 'DENY';
     set.headers['referrer-policy'] = 'no-referrer';
     set.headers['permissions-policy'] = 'camera=(), microphone=(), geolocation=()';
+    // Harmless over plain HTTP (browsers ignore it there), essential behind TLS.
+    set.headers['strict-transport-security'] = 'max-age=31536000; includeSubDomains';
   })
   // Elysia hooks are local to their plugin by default; cast to global so the
   // hook applies to every route of any app that `.use()`s this plugin.
