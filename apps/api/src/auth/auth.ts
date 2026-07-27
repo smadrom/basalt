@@ -14,28 +14,20 @@ import { trustedOrigins } from '../config/origins.ts';
 import * as authSchema from '../db/auth-schema.ts';
 import { db } from '../db/index.ts';
 
-const googleClientId = process.env.GOOGLE_CLIENT_ID?.trim();
-const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
-
-if (Boolean(googleClientId) !== Boolean(googleClientSecret)) {
-  throw new Error('GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be configured together');
-}
-
 export const auth = betterAuth({
   baseURL: env.betterAuthUrl,
   trustedOrigins,
   secret: env.betterAuthSecret,
   database: drizzleAdapter(db, { provider: 'pg', schema: authSchema }),
   emailAndPassword: { enabled: true },
-  socialProviders:
-    googleClientId && googleClientSecret
-      ? {
-          google: {
-            clientId: googleClientId,
-            clientSecret: googleClientSecret,
-          },
-        }
-      : undefined,
+  socialProviders: env.google
+    ? {
+        google: {
+          clientId: env.google.clientId,
+          clientSecret: env.google.clientSecret,
+        },
+      }
+    : undefined,
   plugins: [bearer()],
   // Brute-force protection on credential endpoints. `enabled: true` is
   // explicit because the default is production-only. Memory storage is
