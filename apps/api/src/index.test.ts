@@ -66,6 +66,7 @@ describe('@basalt/api', () => {
     vi.stubEnv('DATABASE_URL', 'postgres://u:p@127.0.0.1:5432/app');
     vi.stubEnv('BETTER_AUTH_URL', 'https://api.example.com');
     vi.stubEnv('BETTER_AUTH_SECRET', 'production-secret-at-least-32-characters');
+    vi.stubEnv('BETTER_AUTH_TRUSTED_ORIGINS', 'https://app.example.com');
     vi.resetModules();
 
     const { app: prodApp } = await import('./index.ts');

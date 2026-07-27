@@ -7,7 +7,7 @@ import { HomeScreen } from './screens/HomeScreen.tsx';
 import { LoginScreen } from './screens/LoginScreen.tsx';
 
 export function App() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const token = useAuthStore((s) => s.token);
   const user = useAuthStore((s) => s.user);
   const [restoring, setRestoring] = useState(Boolean(token && !user));
@@ -31,6 +31,10 @@ export function App() {
     }
     void restore();
   }, [token, user, restore]);
+
+  useEffect(() => {
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);
 
   if (!token) return <LoginScreen />;
 

@@ -92,4 +92,42 @@ describe('HomeScreen', () => {
 
     expect(screen.getByLabelText('Project name')).toBeTruthy();
   });
+
+  it('clears the input and refetches after a successful create', async () => {
+    mocks.get.mockResolvedValue({ data: { data: [] }, error: undefined });
+    mocks.post.mockResolvedValue({ data: { id: 'p_2' }, error: undefined });
+
+    renderHome();
+
+    fireEvent.change(screen.getByLabelText('Project name'), { target: { value: 'New one' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+
+    await waitFor(() => expect(mocks.get).toHaveBeenCalledTimes(2));
+    expect(screen.getByLabelText('Project name')).toHaveValue('');
+  });
+
+  it('removes a project and refetches the list', async () => {
+    mocks.get.mockResolvedValue({ data: { data: [demoProject] }, error: undefined });
+    mocks.del.mockResolvedValue({ data: { deleted: true }, error: undefined });
+
+    renderHome();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete' }));
+
+    await waitFor(() => expect(mocks.del).toHaveBeenCalled());
+    await waitFor(() => expect(mocks.get).toHaveBeenCalledTimes(2));
+  });
+
+  it('shows an alert when deletion fails', async () => {
+    mocks.get.mockResolvedValue({ data: { data: [demoProject] }, error: undefined });
+    mocks.del.mockResolvedValue({ data: null, error: { status: 500, value: 'boom' } });
+
+    renderHome();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Delete' }));
+
+    await waitFor(() =>
+      expect(screen.getByRole('alert')).toHaveTextContent("Couldn't delete the project."),
+    );
+  });
 });
