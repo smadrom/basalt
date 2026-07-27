@@ -71,7 +71,7 @@ export function HomeScreen() {
           maxLength={120}
           onChange={(e) => setName(e.target.value)}
         />
-        <Button type="submit" disabled={create.isPending}>
+        <Button type="submit" disabled={create.isPending || !name.trim()}>
           {t('home.create')}
         </Button>
       </form>
@@ -83,7 +83,7 @@ export function HomeScreen() {
 
       <section className="flex flex-col gap-2">
         <h2 className="text-sm font-medium text-muted">{t('home.projects')}</h2>
-        {projects.isPending && <p className="text-muted">{t('app.loading')}</p>}
+        {projects.isPending && <output className="text-muted">{t('app.loading')}</output>}
         {projects.isError && (
           <div className="flex items-center gap-3">
             <p role="alert" className="text-sm text-danger">
@@ -108,7 +108,7 @@ export function HomeScreen() {
             <span>{project.name}</span>
             <Button
               variant="danger"
-              disabled={remove.isPending}
+              disabled={remove.isPending && remove.variables === project.id}
               onClick={() => remove.mutate(project.id)}
             >
               {t('home.delete')}

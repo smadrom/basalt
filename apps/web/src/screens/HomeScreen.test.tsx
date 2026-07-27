@@ -130,4 +130,41 @@ describe('HomeScreen', () => {
       expect(screen.getByRole('alert')).toHaveTextContent("Couldn't delete the project."),
     );
   });
+
+  it('keeps Create disabled until the name is non-empty', async () => {
+    mocks.get.mockResolvedValue({ data: { data: [] }, error: undefined });
+
+    renderHome();
+
+    const button = screen.getByRole('button', { name: 'Create' });
+    expect(button).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText('Project name'), { target: { value: '   ' } });
+    expect(button).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText('Project name'), { target: { value: 'Real' } });
+    expect(button).toBeEnabled();
+  });
+
+  it('disables only the row being deleted', async () => {
+    const other = { ...demoProject, id: 'p_2', name: 'Other' };
+    mocks.get.mockResolvedValue({ data: { data: [demoProject, other] }, error: undefined });
+    let resolveDelete: (value: { data: { deleted: boolean } }) => void = () => {};
+    mocks.del.mockReturnValue(
+      new Promise((resolve) => {
+        resolveDelete = resolve;
+      }),
+    );
+
+    renderHome();
+
+    const buttons = await screen.findAllByRole('button', { name: 'Delete' });
+    fireEvent.click(buttons[0]);
+
+    await waitFor(() => expect(buttons[0]).toBeDisabled());
+    expect(buttons[1]).toBeEnabled();
+
+    resolveDelete({ data: { deleted: true } });
+    await waitFor(() => expect(buttons[0]).toBeEnabled());
+  });
 });

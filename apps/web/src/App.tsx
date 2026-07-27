@@ -14,11 +14,10 @@ export function App() {
   const [unavailable, setUnavailable] = useState(false);
 
   const restore = useCallback(async () => {
-    setUnavailable(false);
     setRestoring(true);
     try {
       const result = await restoreSession();
-      if (result === 'unavailable') setUnavailable(true);
+      setUnavailable(result === 'unavailable');
     } finally {
       setRestoring(false);
     }
@@ -38,7 +37,7 @@ export function App() {
 
   if (!token) return <LoginScreen />;
 
-  if (restoring) {
+  if (restoring && !unavailable) {
     return (
       <output className="flex min-h-screen items-center justify-center text-muted">
         {t('app.loading')}
@@ -51,7 +50,9 @@ export function App() {
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center">
         <h1 className="text-xl font-semibold">{t('app.unavailableTitle')}</h1>
         <p className="text-muted">{t('app.unavailableBody')}</p>
-        <Button onClick={() => void restore()}>{t('app.retry')}</Button>
+        <Button disabled={restoring} onClick={() => void restore()}>
+          {t('app.retry')}
+        </Button>
       </div>
     );
   }

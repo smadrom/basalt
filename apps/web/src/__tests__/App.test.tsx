@@ -1,6 +1,6 @@
 import { initI18n, useAuthStore } from '@basalt/shared';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { App } from '../App.tsx';
 import { restoreSession } from '../lib/api.ts';
@@ -66,5 +66,40 @@ describe('App', () => {
     );
 
     await waitFor(() => expect(document.documentElement.lang).toBe('en'));
+  });
+
+  it('disables the retry button while restoring', async () => {
+    restoreSessionMock.mockResolvedValueOnce('unavailable');
+    let resolveRetry: (value: 'unavailable') => void = () => {};
+    restoreSessionMock.mockReturnValueOnce(
+      new Promise<'unavailable'>((resolve) => {
+        resolveRetry = resolve;
+      }),
+    );
+    useAuthStore.getState().setSession('saved-token', {
+      id: 'user-1',
+      name: 'Pavel',
+      email: 'pavel@example.com',
+    });
+    useAuthStore.getState().setUser(null);
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>,
+    );
+
+    const retry = await screen.findByRole('button', { name: 'Retry' });
+    fireEvent.click(retry);
+
+    await waitFor(() => expect(retry).toBeDisabled());
+    resolveRetry('unavailable');
+    await waitFor(() => expect(retry).toBeEnabled());
+
+    // Clear the session inside act so the shared afterEach teardown doesn't
+    // fire store updates at the still-mounted App outside act.
+    await act(async () => {
+      useAuthStore.getState().clear();
+    });
   });
 });
