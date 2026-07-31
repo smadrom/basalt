@@ -1,13 +1,9 @@
-import { type AuthUser, createApiClient, useAuthStore } from '@basalt/shared';
+import { type AuthUser, useAuthStore } from '@basalt/shared';
+import { http } from '../providers/http.ts';
 import { AuthError, type AuthErrorCode } from './errors.ts';
 
-const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
-
-/** Typed Eden client; pulls the bearer token from the auth store per request. */
-export const api = createApiClient({
-  baseUrl,
-  getToken: () => useAuthStore.getState().token,
-});
+/** Typed Eden client (kept here for existing import paths; owned by providers/http.ts). */
+export const api = http.api;
 
 interface AuthResponse {
   token: string;
@@ -15,17 +11,7 @@ interface AuthResponse {
 }
 
 async function authRequest(path: '/sign-in/email' | '/sign-up/email', body: object) {
-  let res: Response;
-  try {
-    res = await fetch(`${baseUrl}/api/auth${path}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-  } catch {
-    // fetch itself rejected — DNS, connection refused, CORS.
-    throw new AuthError('NETWORK');
-  }
+  const res = await http.post(`/api/auth${path}`, body);
 
   if (!res.ok) {
     let code: AuthErrorCode = 'UNKNOWN';
@@ -62,9 +48,7 @@ export async function restoreSession() {
   if (!token) return 'unauthenticated' as const;
 
   try {
-    const response = await fetch(`${baseUrl}/api/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await http.get('/api/me');
 
     if (response.status === 401) {
       clear();
@@ -84,10 +68,7 @@ export async function signOut() {
   const { token, clear } = useAuthStore.getState();
   try {
     if (token) {
-      await fetch(`${baseUrl}/api/auth/sign-out`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await http.post('/api/auth/sign-out');
     }
   } catch {
     // Local sign-out must still work when the API is unavailable.
