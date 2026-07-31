@@ -51,7 +51,7 @@ describe('authenticated project workflow', () => {
   afterAll(async () => {
     try {
       for (const entry of emailsToDelete) {
-        await db.delete(user).where(eq(user.email, entry));
+        await db().delete(user).where(eq(user.email, entry));
       }
     } finally {
       await closeDatabase();

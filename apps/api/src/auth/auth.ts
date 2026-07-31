@@ -12,13 +12,13 @@ import { bearer } from 'better-auth/plugins';
 import { env } from '../config/env.ts';
 import { trustedOrigins } from '../config/origins.ts';
 import * as authSchema from '../db/auth-schema.ts';
-import { db } from '../db/index.ts';
+import { db } from '../providers/database.ts';
 
 export const auth = betterAuth({
   baseURL: env.betterAuthUrl,
   trustedOrigins,
   secret: env.betterAuthSecret,
-  database: drizzleAdapter(db, { provider: 'pg', schema: authSchema }),
+  database: drizzleAdapter(db(), { provider: 'pg', schema: authSchema }),
   emailAndPassword: { enabled: true },
   // Explicit session policy (these are better-auth's defaults, pinned so they
   // can't drift silently): 7-day expiry, refreshed at most once a day. Expired
