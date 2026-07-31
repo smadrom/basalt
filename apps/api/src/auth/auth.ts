@@ -12,13 +12,16 @@ import { bearer } from 'better-auth/plugins';
 import { env } from '../config/env.ts';
 import { trustedOrigins } from '../config/origins.ts';
 import * as authSchema from '../db/auth-schema.ts';
-import { db } from '../db/index.ts';
+import { db } from '../providers/database.ts';
+import { social } from '../providers/social.ts';
+
+const drivers = social();
 
 export const auth = betterAuth({
   baseURL: env.betterAuthUrl,
   trustedOrigins,
   secret: env.betterAuthSecret,
-  database: drizzleAdapter(db, { provider: 'pg', schema: authSchema }),
+  database: drizzleAdapter(db(), { provider: 'pg', schema: authSchema }),
   emailAndPassword: { enabled: true },
   // Explicit session policy (these are better-auth's defaults, pinned so they
   // can't drift silently): 7-day expiry, refreshed at most once a day. Expired
@@ -26,14 +29,7 @@ export const auth = betterAuth({
   // abandoned sessions still accumulate; if the table's growth ever matters,
   // schedule a periodic `DELETE FROM session WHERE expires_at < now()`.
   session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
-  socialProviders: env.google
-    ? {
-        google: {
-          clientId: env.google.clientId,
-          clientSecret: env.google.clientSecret,
-        },
-      }
-    : undefined,
+  socialProviders: Object.keys(drivers).length > 0 ? drivers : undefined,
   plugins: [bearer()],
   // Brute-force protection on credential endpoints. `enabled: true` is
   // explicit because the default is production-only. Memory storage is

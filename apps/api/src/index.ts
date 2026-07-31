@@ -6,36 +6,12 @@
  * - OpenAPI + Swagger UI at /openapi (non-production only)
  * - Exports the `App` type for Eden Treaty — typed client on the web, no codegen.
  */
-import { cors } from '@elysiajs/cors';
 import { openapi } from '@elysiajs/openapi';
-import { Elysia } from 'elysia';
-import { betterAuthPlugin } from './auth/plugin.ts';
 import { env } from './config/env.ts';
-import { trustedOrigins } from './config/origins.ts';
-import { closeDatabase } from './db/index.ts';
-import { errorHandler } from './plugins/errors.ts';
-import { securityHeaders } from './plugins/security.ts';
-import { projectsRoutes } from './routes/projects.ts';
+import { createApp } from './providers/http.ts';
+import { bootProviders, teardownProviders } from './providers/index.ts';
 
-export const app = new Elysia()
-  .use(errorHandler)
-  .use(securityHeaders)
-  .use(
-    cors({
-      origin: trustedOrigins,
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Accept', 'Authorization', 'Content-Type'],
-      credentials: false,
-      maxAge: 600,
-    }),
-  )
-  .get('/health', () => ({ status: 'ok' }), { detail: { summary: 'Health check' } })
-  .use(betterAuthPlugin)
-  .get('/api/me', ({ user }) => user, {
-    auth: true,
-    detail: { summary: 'Current authenticated user' },
-  })
-  .use(projectsRoutes);
+export const app = createApp();
 
 /** App type for Eden Treaty (imported by @basalt/shared). */
 export type App = typeof app;
@@ -58,6 +34,7 @@ if (!env.isProduction) {
 }
 
 if (import.meta.main) {
+  bootProviders();
   app.listen(env.port);
   console.log(`🪨  @basalt/api on http://localhost:${env.port}`);
   if (!env.isProduction) console.log('     OpenAPI docs: /openapi');
@@ -67,7 +44,7 @@ if (import.meta.main) {
     // If app.stop() or a hung in-flight request stalls the close, force-exit.
     setTimeout(() => process.exit(1), 10_000).unref();
     await app.stop();
-    await closeDatabase();
+    await teardownProviders();
     process.exit(0);
   };
 
