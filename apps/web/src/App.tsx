@@ -18,6 +18,9 @@ export function App() {
     try {
       const result = await restoreSession();
       setUnavailable(result === 'unavailable');
+    } catch {
+      // A failed restore is indistinguishable from an unavailable API.
+      setUnavailable(true);
     } finally {
       setRestoring(false);
     }
