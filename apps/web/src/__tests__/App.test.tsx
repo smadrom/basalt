@@ -110,4 +110,22 @@ describe('App', () => {
       useAuthStore.getState().clear();
     });
   });
+
+  it('survives a rejected session restore', async () => {
+    restoreSessionMock.mockRejectedValue(new Error('boom'));
+    useAuthStore.getState().setSession('saved-token', {
+      id: 'user-1',
+      name: 'Pavel',
+      email: 'pavel@example.com',
+    });
+    useAuthStore.getState().setUser(null);
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>,
+    );
+
+    expect(await screen.findByText('Service unavailable')).toBeTruthy();
+  });
 });

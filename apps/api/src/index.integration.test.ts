@@ -180,8 +180,12 @@ describe('authenticated project workflow', () => {
     );
     expect(padded.status).toBe(201);
     const paddedProject = (await padded.json()) as { id: string; name: string };
-    expect(paddedProject.name).toBe('padded name');
-    await request(`/api/projects/${paddedProject.id}`, { method: 'DELETE' }, token);
+    try {
+      expect(paddedProject.name).toBe('padded name');
+    } finally {
+      // Cleanup must run even when the assertion above throws.
+      await request(`/api/projects/${paddedProject.id}`, { method: 'DELETE' }, token);
+    }
 
     const missing = await request(`/api/projects/p_${randomUUID()}`, { method: 'DELETE' }, token);
     expect(missing.status).toBe(404);

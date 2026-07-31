@@ -22,8 +22,9 @@ export const auth = betterAuth({
   emailAndPassword: { enabled: true },
   // Explicit session policy (these are better-auth's defaults, pinned so they
   // can't drift silently): 7-day expiry, refreshed at most once a day. Expired
-  // session rows are never reaped automatically — if the table's growth ever
-  // matters, schedule a periodic `DELETE FROM session WHERE expires_at < now()`.
+  // rows are deleted lazily — only when an expired token is presented — so
+  // abandoned sessions still accumulate; if the table's growth ever matters,
+  // schedule a periodic `DELETE FROM session WHERE expires_at < now()`.
   session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
   socialProviders: env.google
     ? {
