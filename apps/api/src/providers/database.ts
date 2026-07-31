@@ -25,7 +25,10 @@ export function db(): Database {
 }
 
 export async function closeDatabase(): Promise<void> {
-  await client?.end({ timeout: 1 });
+  // Clear the cache first — a rejected end() or a racing db() must never
+  // leave a stale client behind.
+  const current = client;
   client = undefined;
   database = undefined;
+  await current?.end({ timeout: 1 });
 }

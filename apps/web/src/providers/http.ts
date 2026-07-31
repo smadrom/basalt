@@ -15,9 +15,7 @@ const api = createApiClient({
 
 async function request(path: string, init: RequestInit = {}): Promise<Response> {
   const token = useAuthStore.getState().token;
-  const headers: Record<string, string> = {
-    ...(init.headers as Record<string, string> | undefined),
-  };
+  const headers: Record<string, string> = {};
   if (init.body) headers['Content-Type'] = 'application/json';
   if (token) headers.Authorization = `Bearer ${token}`;
   try {
