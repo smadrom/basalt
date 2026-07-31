@@ -3,7 +3,10 @@
   "private": true,
   "packageManager": "bun@1.3.14",
   "description": "A full-stack TypeScript starter built with Bun, Elysia, PostgreSQL, and React.",
-  "workspaces": ["packages/*", "apps/*"],
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "dev": "turbo run dev --parallel",
     "dev:api": "turbo run dev --filter=@basalt/api",
