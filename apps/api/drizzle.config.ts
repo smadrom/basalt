@@ -8,7 +8,9 @@ import { defineConfig } from 'drizzle-kit';
  *   bun run db:push       # fast push (dev only)
  */
 const url = process.env.DATABASE_URL;
-if (!url && process.argv.includes('migrate')) {
+// The repo scripts call `drizzle-kit <subcommand>` directly, so the subcommand
+// is argv[2]; exact match avoids false positives like `generate --name migrate`.
+if (!url && process.argv[2] === 'migrate') {
   // A typo'd or missing env must never point migrations at the wrong database.
   throw new Error('[config] DATABASE_URL must be set explicitly for drizzle-kit migrate');
 }
