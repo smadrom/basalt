@@ -72,6 +72,13 @@ describe('env config', () => {
     await expect(importEnv()).rejects.toThrow('GOOGLE_CLIENT');
   });
 
+  it('throws when only the Google client secret is set', async () => {
+    vi.stubEnv('GOOGLE_CLIENT_ID', '');
+    vi.stubEnv('GOOGLE_CLIENT_SECRET', 'google-secret');
+
+    await expect(importEnv()).rejects.toThrow('GOOGLE_CLIENT');
+  });
+
   it('exposes both Google credentials when configured', async () => {
     vi.stubEnv('GOOGLE_CLIENT_ID', 'google-id');
     vi.stubEnv('GOOGLE_CLIENT_SECRET', 'google-secret');
