@@ -6,8 +6,8 @@
 import { and, desc, eq } from 'drizzle-orm';
 import { Elysia, t } from 'elysia';
 import { betterAuthPlugin } from '../auth/plugin.ts';
-import { db } from '../providers/database.ts';
 import { projects } from '../db/schema.ts';
+import { db } from '../providers/database.ts';
 
 const ProjectModel = t.Object({
   id: t.String(),
