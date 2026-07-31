@@ -6,7 +6,7 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/dist", "!**/.turbo", "!**/apps/api/drizzle"]
+    "includes": ["**", "!**/dist", "!**/.turbo", "!**/apps/api/drizzle", "!**/*.css"]
   },
   "assist": { "actions": { "source": { "organizeImports": "off" } } },
   "formatter": {
@@ -34,17 +34,5 @@
         "noConsole": "off"
       }
     }
-  },
-  "overrides": [
-    {
-      "includes": ["**/*.css"],
-      "linter": {
-        "rules": {
-          "suspicious": {
-            "noUnknownAtRules": "off"
-          }
-        }
-      }
-    }
-  ]
+  }
 }
