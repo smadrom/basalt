@@ -1,9 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import { eq } from 'drizzle-orm';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 import { user } from './db/auth-schema.ts';
-import { db } from './db/index.ts';
-import { bootProviders, teardownProviders } from './providers/index.ts';
+import { closeDatabase, db } from './db/index.ts';
 import { app } from './index.ts';
 
 const email = `integration-${randomUUID()}@example.com`;
@@ -49,17 +48,13 @@ async function signUp(email: string) {
 }
 
 describe('authenticated project workflow', () => {
-  beforeAll(() => {
-    bootProviders();
-  });
-
   afterAll(async () => {
     try {
       for (const entry of emailsToDelete) {
-        await db().delete(user).where(eq(user.email, entry));
+        await db.delete(user).where(eq(user.email, entry));
       }
     } finally {
-      await teardownProviders();
+      await closeDatabase();
     }
   });
 

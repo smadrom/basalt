@@ -7,7 +7,7 @@ import { and, desc, eq } from 'drizzle-orm';
 import { Elysia, t } from 'elysia';
 import { betterAuthPlugin } from '../auth/plugin.ts';
 import { projects } from '../db/schema.ts';
-import { db } from '../providers/database.ts';
+import { db } from '../db/index.ts';
 
 const ProjectModel = t.Object({
   id: t.String(),
@@ -29,7 +29,7 @@ export const projectsRoutes = new Elysia({ prefix: '/api/projects', tags: ['proj
   .get(
     '/',
     async ({ user }) => {
-      const rows = await db()
+      const rows = await db
         .select()
         .from(projects)
         .where(eq(projects.ownerId, user.id))
@@ -47,7 +47,7 @@ export const projectsRoutes = new Elysia({ prefix: '/api/projects', tags: ['proj
     async ({ user, body, status }) => {
       const name = body.name.trim();
       if (!name) return status(422, { error: 'invalid_name' });
-      const [row] = await db()
+      const [row] = await db
         .insert(projects)
         .values({ id: newId(), ownerId: user.id, name })
         .returning();
@@ -66,7 +66,7 @@ export const projectsRoutes = new Elysia({ prefix: '/api/projects', tags: ['proj
   .delete(
     '/:id',
     async ({ user, params, status }) => {
-      const [row] = await db()
+      const [row] = await db
         .delete(projects)
         .where(and(eq(projects.id, params.id), eq(projects.ownerId, user.id)))
         .returning();

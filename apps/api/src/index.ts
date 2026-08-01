@@ -7,9 +7,9 @@
  * - Exports the `App` type for Eden Treaty — typed client on the web, no codegen.
  */
 import { openapi } from '@elysiajs/openapi';
+import { createApp } from './app.ts';
 import { env } from './config/env.ts';
-import { createApp } from './providers/http.ts';
-import { bootProviders, teardownProviders } from './providers/index.ts';
+import { closeDatabase } from './db/index.ts';
 
 export const app = createApp();
 
@@ -34,7 +34,6 @@ if (!env.isProduction) {
 }
 
 if (import.meta.main) {
-  bootProviders();
   app.listen(env.port);
   console.log(`🪨  @basalt/api on http://localhost:${env.port}`);
   if (!env.isProduction) console.log('     OpenAPI docs: /openapi');
@@ -44,7 +43,7 @@ if (import.meta.main) {
     // If app.stop() or a hung in-flight request stalls the close, force-exit.
     setTimeout(() => process.exit(1), 10_000).unref();
     await app.stop();
-    await teardownProviders();
+    await closeDatabase();
     process.exit(0);
   };
 

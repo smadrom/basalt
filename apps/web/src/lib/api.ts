@@ -1,9 +1,6 @@
 import { type AuthUser, useAuthStore } from '@basalt/shared';
-import { http } from '../providers/http.ts';
 import { AuthError, type AuthErrorCode } from './errors.ts';
-
-/** Typed Eden client (kept here for existing import paths; owned by providers/http.ts). */
-export const api = http.api;
+import { http } from './http.ts';
 
 interface AuthResponse {
   token: string;

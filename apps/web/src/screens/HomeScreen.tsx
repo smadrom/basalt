@@ -4,7 +4,8 @@ import { type FormEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '../components/LanguageSwitcher.tsx';
 import { Button } from '../components/ui/button.tsx';
-import { api, signOut } from '../lib/api.ts';
+import { signOut } from '../lib/api.ts';
+import { api } from '../lib/http.ts';
 
 const PROJECTS_KEY = ['projects'];
 

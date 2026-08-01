@@ -1,14 +1,15 @@
 /**
- * HTTP provider — single facade for API requests: the typed Eden client
- * (`http.api`) plus raw JSON helpers (`http.get`/`http.post`) that add the
- * baseUrl and bearer token and map network failures to AuthError('NETWORK').
+ * HTTP client for the API: the typed Eden client plus raw JSON helpers
+ * (`http.get`/`http.post`) that add the baseUrl and bearer token and map
+ * network failures to AuthError('NETWORK').
  */
 import { createApiClient, useAuthStore } from '@basalt/shared';
-import { AuthError } from '../lib/errors.ts';
+import { AuthError } from './errors.ts';
 
 const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3001';
 
-const api = createApiClient({
+/** Typed Eden client (route types come from the API's exported `App` type). */
+export const api = createApiClient({
   baseUrl,
   getToken: () => useAuthStore.getState().token,
 });

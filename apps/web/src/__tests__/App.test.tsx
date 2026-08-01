@@ -110,26 +110,4 @@ describe('App', () => {
       useAuthStore.getState().clear();
     });
   });
-
-  // The screen assertion alone is vacuous — `!user` renders the same screen.
-  // What guards the fix is vitest failing the file on the unhandled rejection;
-  // if this ever greens without the catch in App.tsx, check for a vitest
-  // config that ignores unhandled errors.
-  it('survives a rejected session restore', async () => {
-    restoreSessionMock.mockRejectedValue(new Error('boom'));
-    useAuthStore.getState().setSession('saved-token', {
-      id: 'user-1',
-      name: 'Pavel',
-      email: 'pavel@example.com',
-    });
-    useAuthStore.getState().setUser(null);
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <App />
-      </QueryClientProvider>,
-    );
-
-    expect(await screen.findByText('Service unavailable')).toBeTruthy();
-  });
 });

@@ -12,6 +12,9 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('../lib/api.ts', () => ({
   signOut: vi.fn(),
+}));
+
+vi.mock('../lib/http.ts', () => ({
   api: {
     api: {
       projects: Object.assign(() => ({ delete: mocks.del }), {
