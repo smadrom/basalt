@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@basalt/api": "*",
-    "@types/react": "^19.2.17",
+    "@types/react": "^19.2.18",
     "elysia": "^1.2.0",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
