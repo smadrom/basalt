@@ -105,8 +105,10 @@ job "basalt-api" {
       }
 
       service {
-        name = "basalt-api"
-        port = "http"
+        name     = "basalt-api"
+        port     = "http"
+        # mvp-vm has no Consul agent; use Nomad-native service discovery.
+        provider = "nomad"
 
         tags = [
           "traefik.enable=true",

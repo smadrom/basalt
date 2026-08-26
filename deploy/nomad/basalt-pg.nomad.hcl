@@ -53,8 +53,10 @@ job "basalt-pg" {
       }
 
       service {
-        name = "basalt-pg"
-        port = "db"
+        name     = "basalt-pg"
+        port     = "db"
+        # mvp-vm has no Consul agent; use Nomad-native service discovery.
+        provider = "nomad"
 
         check {
           type     = "tcp"
