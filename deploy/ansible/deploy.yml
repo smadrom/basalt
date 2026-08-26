@@ -1,0 +1,109 @@
+---
+# Deploy basalt to mvp-vm (CargoTech single-node Nomad, datacenter "mvp").
+#
+# Run from the operator machine with the core inventory:
+#   ansible-playbook -i ../core/ansible/inventory.yml deploy/ansible/deploy.yml
+#
+# Prerequisites on the target:
+#   - Nomad Variables created (see deploy/README.md):
+#       nomad/jobs/basalt-pg  (POSTGRES_USER/POSTGRES_PASSWORD/POSTGRES_DB)
+#       nomad/jobs/basalt     (DATABASE_URL/BETTER_AUTH_URL/BETTER_AUTH_SECRET/…)
+#
+# The playbook is idempotent: re-running syncs the repo, rebuilds the images
+# and re-applies the job specs (Nomad rolls only on real spec changes).
+- name: Deploy basalt to mvp-vm
+  hosts: mvp-vm
+  gather_facts: true
+
+  vars:
+    basalt_repo: https://github.com/smadrom/basalt.git
+    basalt_ref: main
+    basalt_src: /opt/mvp/src/basalt
+    basalt_jobs_dir: /opt/mvp/jobs
+    basalt_pg_data: /opt/mvp/data/basalt-pg
+    nomad_addr: http://10.50.0.30:4646
+    nomad_config_dir: /etc/nomad.d
+    basalt_public_url: https://basalt.stargate.expw.net
+    basalt_jobs:
+      - basalt-pg
+      - basalt-api
+      - basalt-web
+
+  handlers:
+    - name: Restart nomad
+      become: true
+      ansible.builtin.systemd:
+        name: nomad
+        state: restarted
+
+  tasks:
+    - name: Sync basalt source tree
+      ansible.builtin.git:
+        repo: "{{ basalt_repo }}"
+        dest: "{{ basalt_src }}"
+        version: "{{ basalt_ref }}"
+        force: true
+
+    - name: Build the API image on the host
+      ansible.builtin.command:
+        cmd: docker build -f docker/Dockerfile.api -t basalt-api:latest .
+        chdir: "{{ basalt_src }}"
+      changed_when: true
+
+    - name: Build the web image on the host
+      ansible.builtin.command:
+        cmd: >-
+          docker build -f docker/Dockerfile.web -t basalt-web:latest
+          --build-arg VITE_API_URL={{ basalt_public_url }} .
+        chdir: "{{ basalt_src }}"
+      changed_when: true
+
+    - name: Ensure the Nomad jobs directory exists
+      become: true
+      ansible.builtin.file:
+        path: "{{ basalt_jobs_dir }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Ensure the PostgreSQL data directory exists
+      become: true
+      ansible.builtin.file:
+        path: "{{ basalt_pg_data }}"
+        state: directory
+        # postgres:17-alpine runs as uid/gid 70
+        owner: "70"
+        group: "70"
+        mode: "0700"
+
+    - name: Register the basalt-pg host volume in the Nomad client config
+      become: true
+      ansible.builtin.copy:
+        dest: "{{ nomad_config_dir }}/basalt-volumes.hcl"
+        mode: "0644"
+        content: |
+          client {
+            host_volume "basalt-pg" {
+              path      = "{{ basalt_pg_data }}"
+              read_only = false
+            }
+          }
+      notify: Restart nomad
+
+    - name: Copy the Nomad job specs to the host
+      become: true
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../nomad/{{ item }}.nomad.hcl"
+        dest: "{{ basalt_jobs_dir }}/{{ item }}.nomad.hcl"
+        mode: "0644"
+      loop: "{{ basalt_jobs }}"
+
+    - name: Validate and run the Nomad jobs
+      become: true
+      ansible.builtin.command:
+        cmd: nomad job run {{ basalt_jobs_dir }}/{{ item }}.nomad.hcl
+      environment:
+        NOMAD_ADDR: "{{ nomad_addr }}"
+      loop: "{{ basalt_jobs }}"
+      changed_when: true

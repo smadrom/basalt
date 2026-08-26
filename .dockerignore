@@ -1,0 +1,14 @@
+# Build-context filter for docker/Dockerfile.api and docker/Dockerfile.web.
+node_modules
+**/node_modules
+**/dist
+**/.turbo
+.git
+.github
+.dockerignore
+docker-compose.yml
+docker-compose.prod.yml
+docs
+*.md
+.env
+.env.*

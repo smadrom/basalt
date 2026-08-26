@@ -28,7 +28,8 @@ apps/
   web/       React application
 packages/
   shared/    API client, contracts, localization, and auth state
-docker/      Local PostgreSQL service
+docker/      Local PostgreSQL service and production images/compose
+deploy/      Nomad job specs, Ansible playbook, and deployment guide
 ```
 
 The web workspace imports the API's `App` type. Request bodies, route parameters,

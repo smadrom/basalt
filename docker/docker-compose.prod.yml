@@ -1,0 +1,61 @@
+# Production-like local stack: PostgreSQL + API + web behind an nginx that
+# proxies /api/* to the API (mirrors the Traefik routing used on Nomad).
+#
+#   cp .env.example .env   # then set a real BETTER_AUTH_SECRET
+#   docker compose -f docker/docker-compose.prod.yml up --build
+#
+# Web: http://localhost:8080 (API reachable same-origin under /api/*)
+name: basalt-prod
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: basalt-prod-db
+    environment:
+      POSTGRES_USER: basalt
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-basalt}
+      POSTGRES_DB: basalt
+    volumes:
+      - basalt-prod-pg:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U basalt -d basalt"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    container_name: basalt-prod-api
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["bun run --cwd apps/api db:migrate && bun run apps/api/src/index.ts"]
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      DATABASE_URL: postgres://basalt:${POSTGRES_PASSWORD:-basalt}@db:5432/basalt
+      BETTER_AUTH_URL: http://localhost:8080
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?BETTER_AUTH_SECRET must be set (see .env.example)}
+      BETTER_AUTH_TRUSTED_ORIGINS: http://localhost:8080
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.web
+      args:
+        NGINX_CONF: docker/nginx/spa-api-proxy.conf
+        # Same-origin: the browser calls /api/* and nginx proxies to the API.
+        VITE_API_URL: ""
+    container_name: basalt-prod-web
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      - api
+
+volumes:
+  basalt-prod-pg:

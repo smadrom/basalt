@@ -1,0 +1,27 @@
+# syntax=docker/dockerfile:1
+# Basalt API image — Bun + Elysia. Build context is the monorepo root:
+#   docker build -f docker/Dockerfile.api -t basalt-api:latest .
+FROM oven/bun:1
+
+WORKDIR /app
+
+# Manifests first so dependency layers cache across code changes.
+COPY package.json bun.lock ./
+COPY apps/api/package.json apps/api/
+COPY apps/web/package.json apps/web/
+COPY packages/shared/package.json packages/shared/
+
+# Full install on purpose: drizzle-kit (devDependency) runs migrations at
+# deploy time from this same image.
+RUN bun install --frozen-lockfile
+
+COPY tsconfig.base.json ./
+COPY packages/shared packages/shared
+COPY apps/api apps/api
+
+ENV NODE_ENV=production
+ENV PORT=3001
+EXPOSE 3001
+
+# oven/bun ships ENTRYPOINT ["bun"], so CMD carries only bun's arguments.
+CMD ["run", "apps/api/src/index.ts"]
