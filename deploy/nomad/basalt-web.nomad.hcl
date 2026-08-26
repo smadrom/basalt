@@ -14,7 +14,6 @@ job "basalt-web" {
     healthy_deadline  = "3m"
     progress_deadline = "5m"
     auto_revert       = true
-    auto_promote      = true
   }
 
   group "web" {
