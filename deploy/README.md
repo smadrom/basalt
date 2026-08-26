@@ -59,8 +59,9 @@ on the host, or `ssh -N -L 4646:10.50.0.30:4646 mvp-vm` for the UI.
    ```
 
    It syncs the repo to `/opt/mvp/src/basalt`, builds `basalt-api:latest` and
-   `basalt-web:latest` on the host, provisions the `basalt-pg` host volume,
-   copies the job specs to `/opt/mvp/jobs/` and runs them.
+   `basalt-web:latest` on the host, provisions the PostgreSQL data directory
+   (`/opt/mvp/data/basalt-pg`, bind-mounted into the container), copies the
+   job specs to `/opt/mvp/jobs/` and runs them.
 
 3. **Public ingress**: the edge Traefik (`95.216.186.254`) terminates TLS for
    `basalt.stargate.expw.net` and forwards plain HTTP through the existing

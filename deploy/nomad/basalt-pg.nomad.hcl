@@ -4,8 +4,9 @@
 #   nomad var put nomad/jobs/basalt-pg \
 #     POSTGRES_USER=basalt POSTGRES_PASSWORD=<strong> POSTGRES_DB=basalt
 #
-# Data lives in the Nomad host volume "basalt-pg" (/opt/mvp/data/basalt-pg,
-# provisioned by deploy/ansible/deploy.yml).
+# Data lives in a bind mount at /opt/mvp/data/basalt-pg (provisioned by
+# deploy/ansible/deploy.yml) — the same pattern as the other mvp-vm stateful
+# jobs; the mvp-vm Nomad client registers no host volumes.
 job "basalt-pg" {
   datacenters = ["mvp"]
   type        = "service"
@@ -23,23 +24,13 @@ job "basalt-pg" {
       }
     }
 
-    volume "pgdata" {
-      type      = "host"
-      source    = "basalt-pg"
-      read_only = false
-    }
-
     task "postgres" {
       driver = "docker"
 
       config {
-        image = "postgres:17-alpine"
-        ports = ["db"]
-      }
-
-      volume_mount {
-        volume      = "pgdata"
-        destination = "/var/lib/postgresql/data"
+        image   = "postgres:17-alpine"
+        ports   = ["db"]
+        volumes = ["/opt/mvp/data/basalt-pg:/var/lib/postgresql/data"]
       }
 
       template {

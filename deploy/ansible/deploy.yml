@@ -22,19 +22,13 @@
     basalt_jobs_dir: /opt/mvp/jobs
     basalt_pg_data: /opt/mvp/data/basalt-pg
     nomad_addr: http://10.50.0.30:4646
-    nomad_config_dir: /etc/nomad.d
     basalt_public_url: https://basalt.stargate.expw.net
     basalt_jobs:
       - basalt-pg
       - basalt-api
       - basalt-web
 
-  handlers:
-    - name: Restart nomad
-      become: true
-      ansible.builtin.systemd:
-        name: nomad
-        state: restarted
+  handlers: []
 
   tasks:
     - name: Sync basalt source tree
@@ -76,20 +70,6 @@
         owner: "70"
         group: "70"
         mode: "0700"
-
-    - name: Register the basalt-pg host volume in the Nomad client config
-      become: true
-      ansible.builtin.copy:
-        dest: "{{ nomad_config_dir }}/basalt-volumes.hcl"
-        mode: "0644"
-        content: |
-          client {
-            host_volume "basalt-pg" {
-              path      = "{{ basalt_pg_data }}"
-              read_only = false
-            }
-          }
-      notify: Restart nomad
 
     - name: Copy the Nomad job specs to the host
       become: true
