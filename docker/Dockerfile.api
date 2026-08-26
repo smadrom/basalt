@@ -12,8 +12,9 @@ COPY apps/web/package.json apps/web/
 COPY packages/shared/package.json packages/shared/
 
 # Full install on purpose: drizzle-kit (devDependency) runs migrations at
-# deploy time from this same image.
-RUN bun install --frozen-lockfile
+# deploy time from this same image. --ignore-scripts: no git in the image,
+# so the root "prepare" (lefthook install) would fail; no dep needs scripts.
+RUN bun install --frozen-lockfile --ignore-scripts
 
 COPY tsconfig.base.json ./
 COPY packages/shared packages/shared

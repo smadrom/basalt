@@ -15,7 +15,9 @@ COPY package.json bun.lock ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
 COPY packages/shared/package.json packages/shared/
-RUN bun install --frozen-lockfile
+# --ignore-scripts: no git in the image, so the root "prepare" (lefthook
+# install) would fail; no dependency needs lifecycle scripts here.
+RUN bun install --frozen-lockfile --ignore-scripts
 
 COPY tsconfig.base.json ./
 COPY packages/shared packages/shared
