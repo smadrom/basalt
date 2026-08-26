@@ -20,17 +20,17 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@elysiajs/cors": "^1.2.0",
-    "@elysiajs/openapi": "^1.2.0",
-    "better-auth": "^1.6.25",
+    "@elysiajs/cors": "^1.4.2",
+    "@elysiajs/openapi": "^1.4.15",
+    "better-auth": "^1.7.1",
     "drizzle-orm": "^0.45.2",
     "elysia": "^1.4.29",
-    "postgres": "^3.4.5"
+    "postgres": "^3.4.9"
   },
   "devDependencies": {
-    "@types/bun": "^1.1.14",
+    "@types/bun": "^1.4.0",
     "drizzle-kit": "^0.31.10",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   }
 }
