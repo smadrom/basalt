@@ -17,9 +17,10 @@
     "typecheck": "turbo run typecheck",
     "check": "turbo run typecheck test",
     "verify": "bun run audit && bun run lint && turbo run typecheck test build",
-    "audit": "bun audit --audit-level=high",
+    "audit": "bun audit --audit-level=moderate",
     "lint": "biome ci .",
     "format": "biome check --write .",
+    "prepare": "lefthook install",
     "db:up": "docker compose -f docker/docker-compose.yml up -d",
     "db:down": "docker compose -f docker/docker-compose.yml down",
     "db:generate": "turbo run db:generate --filter=@basalt/api",
@@ -27,10 +28,13 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.10",
+    "lefthook": "^2.1.10",
     "turbo": "^2.10.12",
     "typescript": "^7.0.2"
   },
   "overrides": {
-    "nanoid": "^3.3.16"
+    "esbuild": "^0.25.0",
+    "nanoid": "^3.3.16",
+    "postcss": "^8.5.23"
   }
 }

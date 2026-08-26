@@ -51,7 +51,7 @@ export const projectsRoutes = new Elysia({ prefix: '/api/projects', tags: ['proj
         .insert(projects)
         .values({ id: newId(), ownerId: user.id, name })
         .returning();
-      return status(201, serialize(row));
+      return status(201, serialize(row!));
     },
     {
       auth: true,

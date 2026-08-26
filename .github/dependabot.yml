@@ -30,3 +30,11 @@ updates:
       interval: weekly
     cooldown:
       default-days: 3
+
+  # Keeps docker/docker-compose.yml images (e.g. postgres:17-alpine) current.
+  - package-ecosystem: docker
+    directory: /docker
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 3
