@@ -10,7 +10,8 @@
 #     GOOGLE_CLIENT_ID= GOOGLE_CLIENT_SECRET=
 #
 # The image is built on the host (see deploy/ansible/deploy.yml), hence
-# force_pull = false.
+# force_pull = false. The tag must NOT be `latest`: the docker driver pulls
+# unconditionally for latest/untagged images, and this image is local-only.
 job "basalt-api" {
   datacenters = ["mvp"]
   type        = "service"
@@ -43,7 +44,7 @@ job "basalt-api" {
       }
 
       config {
-        image      = "basalt-api:latest"
+        image      = "basalt-api:mvp"
         force_pull = false
         # The image entrypoint is `bun` — these become its arguments.
         command = "run"
@@ -72,7 +73,7 @@ job "basalt-api" {
       driver = "docker"
 
       config {
-        image      = "basalt-api:latest"
+        image      = "basalt-api:mvp"
         force_pull = false
         ports      = ["http"]
       }

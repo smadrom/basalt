@@ -3,7 +3,9 @@
 # by the basalt-api router (longer rule wins in Traefik).
 #
 # The image is built on the host with VITE_API_URL pointing at the public
-# origin (see deploy/ansible/deploy.yml), hence force_pull = false.
+# origin (see deploy/ansible/deploy.yml), hence force_pull = false. The tag
+# must NOT be `latest`: the docker driver always pulls latest/untagged
+# images, and this image is local-only.
 job "basalt-web" {
   datacenters = ["mvp"]
   type        = "service"
@@ -30,7 +32,7 @@ job "basalt-web" {
       driver = "docker"
 
       config {
-        image      = "basalt-web:latest"
+        image      = "basalt-web:mvp"
         force_pull = false
         ports      = ["http"]
       }

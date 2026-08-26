@@ -58,10 +58,13 @@ on the host, or `ssh -N -L 4646:10.50.0.30:4646 mvp-vm` for the UI.
    ansible-playbook -i ../core/ansible/inventory.yml deploy/ansible/deploy.yml
    ```
 
-   It syncs the repo to `/opt/mvp/src/basalt`, builds `basalt-api:latest` and
-   `basalt-web:latest` on the host, provisions the PostgreSQL data directory
+   It syncs the repo to `/opt/mvp/src/basalt`, builds `basalt-api:mvp` and
+   `basalt-web:mvp` on the host, provisions the PostgreSQL data directory
    (`/opt/mvp/data/basalt-pg`, bind-mounted into the container), copies the
-   job specs to `/opt/mvp/jobs/` and runs them.
+   job specs to `/opt/mvp/jobs/` and runs them. When the source changed, the
+   app jobs are restarted to pick up the rebuilt images (the image tag is
+   stable on purpose: Nomad always pulls `latest`, which fails for
+   host-local images).
 
 3. **Public ingress**: the edge Traefik (`95.216.186.254`) terminates TLS for
    `basalt.stargate.expw.net` and forwards plain HTTP through the existing

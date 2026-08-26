@@ -37,17 +37,23 @@
         dest: "{{ basalt_src }}"
         version: "{{ basalt_ref }}"
         force: true
+      register: basalt_git
 
+    # Images use the stable non-latest tag `mvp`: the Nomad docker driver
+    # ALWAYS pulls images tagged `latest` (or untagged), which fails for
+    # host-local images. A stable tag means `nomad job run` sees no spec
+    # change on redeploy, so the app jobs are restarted explicitly below
+    # whenever the source tree changed.
     - name: Build the API image on the host
       ansible.builtin.command:
-        cmd: docker build -f docker/Dockerfile.api -t basalt-api:latest .
+        cmd: docker build -f docker/Dockerfile.api -t basalt-api:mvp .
         chdir: "{{ basalt_src }}"
       changed_when: true
 
     - name: Build the web image on the host
       ansible.builtin.command:
         cmd: >-
-          docker build -f docker/Dockerfile.web -t basalt-web:latest
+          docker build -f docker/Dockerfile.web -t basalt-web:mvp
           --build-arg VITE_API_URL={{ basalt_public_url }} .
         chdir: "{{ basalt_src }}"
       changed_when: true
@@ -86,4 +92,18 @@
       environment:
         NOMAD_ADDR: "{{ nomad_addr }}"
       loop: "{{ basalt_jobs }}"
+      changed_when: true
+
+    # The image tag is stable, so `nomad job run` above is a no-op when only
+    # the image content changed. Restart the app jobs to pick up the rebuild.
+    - name: Restart app jobs to pick up rebuilt images
+      become: true
+      ansible.builtin.command:
+        cmd: nomad job restart {{ item }}
+      environment:
+        NOMAD_ADDR: "{{ nomad_addr }}"
+      loop:
+        - basalt-api
+        - basalt-web
+      when: basalt_git is changed
       changed_when: true
