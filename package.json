@@ -27,9 +27,9 @@
     "db:migrate": "turbo run db:migrate --filter=@basalt/api"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.10",
-    "lefthook": "^2.1.10",
-    "turbo": "^2.10.12",
+    "@biomejs/biome": "2.5.14",
+    "lefthook": "^2.1.14",
+    "turbo": "^2.11.2",
     "typescript": "^7.0.2"
   },
   "overrides": {
